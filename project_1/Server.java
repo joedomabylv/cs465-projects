@@ -4,7 +4,9 @@
    3. Send messages to all participating clients
  */
 public class Server {
+    
     public static void main(String[] args) {
 	System.out.println("I am the server!");
     }
+    
 }
