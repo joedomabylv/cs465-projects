@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import static Server.utils.ServerPropHandler.getServerInfo;
-import Server.utils.Note;
+import Server.utils.Message;
 
 class Server {
     public static void main(String[] args) throws IOException {

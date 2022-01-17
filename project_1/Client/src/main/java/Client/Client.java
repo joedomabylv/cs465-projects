@@ -6,61 +6,95 @@ import java.util.*;
 
 // custom imports
 import static Client.utils.ServerPropHandler.getServerInfo;
-import Client.utils.Note;
+import Client.utils.Message;
 
 public class Client {
-
-    // declare constants
-    private static final String JOIN = "1";
-    private static final String LEAVE = "2";
-    private static final String SEND_NOTE = "3";
-    private static final String SHUTDOWN = "4";
-    private static final String SHUTDOWN_ALL = "5";
-
-    private static Boolean isValidMessage(String input) {
-        return ( input.equals(JOIN)
-                || input.equals(LEAVE)
-                || input.equals(SEND_NOTE)
-                || input.equals(SHUTDOWN)
-                || input.equals(SHUTDOWN_ALL) );
+    
+    // declare variables
+    NodeInfo nodeInfo;
+    Message message;
+    private static final Scanner scanner = new Scanner(System.in);
+    
+    // private nodeInfo class
+    private class NodeInfo {
+        String serverIP;
+        String name;
+        int serverPort;
+        
+        // constructor
+        NodeInfo(String serverIP, String name, int serverPort) {
+            this.serverIP = serverIP;
+            this.name = name;
+            this.serverPort = serverPort;
+        }
+    }
+    
+    // constructor
+    public Client(String serverIP, String name, int serverPort) {
+        this.nodeInfo = new NodeInfo(serverIP, name, serverPort);
+        this.message = new Message(null, null);
     }
 
-    private static void dispatchNote(Note newNote) {
-        switch (newNote.getType()) {
-            case JOIN:
-                newNote.join();
+    // dispatch the message to the server
+    private static void dispatchMessage(Message message) {
+        
+        // declare variables
+        Boolean shutdown = false;
+        
+        // connect to server
+        
+        switch (message.getType()) {
+            case Message.JOIN:
+                System.out.println("Join!");
                 break;
-            case LEAVE:
-                newNote.leave();
+            case Message.LEAVE:
+                System.out.println("Leave!");
                 break;
-            case SEND_NOTE:
-                newNote.noteMessage();
+            case Message.SEND_NOTE:
+                System.out.println("Send note!");
                 break;
-            case SHUTDOWN:
-                newNote.shutdown();
-                System.exit(0);
-            case SHUTDOWN_ALL:
-                newNote.shutdownAll();
+            case Message.SHUTDOWN:
+                System.out.println("Shutdown!");
+                shutdown = true;
                 break;
+        }
+        
+        // close connection to server
+        
+        // check if client wanted to shutdown
+        if(shutdown){
+            System.exit(0);
         }
     }
 
-    private static void runChat() {
-        Scanner scanner = new Scanner(System.in);
-        String inputString = null;
-        System.out.println("Welcome to chat! What would you like to do?");
+    private static void runChat(Client client) {
+        
+        // declare variables
+        String inputString;
+        
+        // welcome the user
+        System.out.println("Welcome to chat, " + client.nodeInfo.name + "! What would you like to do?\n");
+        
+        // run the chat loop
         while (true) {
-            System.out.println("  1. Join chat");
-            System.out.println("  2. Leave chat");
-            System.out.println("  3. Send message");
-            System.out.println("  4. Shutdown");
-            System.out.println("  5. Shutdown all");
+            System.out.println("1. Join chat");
+            System.out.println("2. Leave chat");
+            System.out.println("3. Send note");
+            System.out.println("4. Shutdown");
 
+            // take input from user, stdin
             inputString = scanner.nextLine();
 
-            if (isValidMessage(inputString)) {
-                // dispatch as a thread?
-                dispatchNote(new Note(inputString, null));
+            // if the user input a valid message, accept
+            if (client.message.isValidType(inputString)) {
+                
+                // set the clients message type
+                client.message.setType(inputString);
+                
+                // dispatch the message to the server, as a thread?
+                dispatchMessage(client.message);
+                
+                // user input incorrect message, try again
             } else {
                 System.out.println("Please provide valid input, goofball");
             }
@@ -69,16 +103,16 @@ public class Client {
 
     public static void main(String[] args) throws IOException {
 
-        System.out.println("Hello, I am the client!");
-
         // gather variables
         Properties prop = getServerInfo("config/server.properties");
         String serverIP = prop.getProperty("SERVER_IP");
         int serverPort = Integer.parseInt(prop.getProperty("SERVER_PORT"));
+        
+        // get the users logical name
+        System.out.println("Hello! What is your name?");
+        String name = scanner.nextLine();
 
-        System.out.println("Attempting to connect to " + serverIP + ":" + serverPort);
-
-        runChat();
+        runChat(new Client(serverIP, name, serverPort));
 
     }
 
