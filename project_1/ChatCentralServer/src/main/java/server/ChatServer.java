@@ -1,12 +1,12 @@
-package Server;
+package server;
 
 import java.io.*;
 import java.util.*;
 
-import static Server.utils.ServerPropHandler.getServerInfo;
-import Server.utils.Message;
+import static utils.ServerPropHandler.getServerInfo;
+import message.Message;
 
-class Server {
+class ChatServer {
     public static void main(String[] args) throws IOException {
         System.out.println("Hello, I am the server!");
         

@@ -1,6 +1,8 @@
-package Client.utils;
+package message;
 
-public class Message implements java.io.Serializable, MessageType {
+import java.io.Serializable;
+
+public class Message implements Serializable, MessageType {
 
     // variables
     String type;
@@ -29,14 +31,4 @@ public class Message implements java.io.Serializable, MessageType {
 	return this.content;
     }
 
-    // check that the user has input a valid message, one of the primary
-    // operations
-    @Override
-    public Boolean isValidType(String type) {
-        return ( type.equals(JOIN)
-                || type.equals(LEAVE)
-                || type.equals(SEND_NOTE)
-                || type.equals(SHUTDOWN) );
-    }
-    
 }
