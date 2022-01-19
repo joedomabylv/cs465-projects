@@ -1,5 +1,5 @@
 package chat;
 
-public class ReceiverWorker {
+public class ReceiverWorker extends Thread {
     
 }

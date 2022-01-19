@@ -5,21 +5,21 @@ import java.io.Serializable;
 public class Message implements Serializable, MessageType {
 
     // variables
-    String type;
+    int type;
     Object content;
     
     // constructor
-    public Message(String type, Object content) {
+    public Message(int type, Object content) {
 	this.type = type;
 	this.content = content;
     }
 
     // getter & setter
-    public void setType(String type) {
+    public void setType(int type) {
 	this.type = type;
     }
 	
-    public String getType() {
+    public int getType() {
 	return this.type;
     }
 

@@ -6,7 +6,21 @@ import java.util.*;
 import static utils.ServerPropHandler.getServerInfo;
 import message.Message;
 
-class ChatServer {
+class ChatServer implements Runnable {
+
+    String serverIP;
+    int serverPort;
+    
+    public ChatServer(String serverIP, int serverPort) {
+        this.serverIP = serverIP;
+        this.serverPort = serverPort;
+    }
+    
+    @Override
+    public void run() {
+        
+    }
+    
     public static void main(String[] args) throws IOException {
         System.out.println("Hello, I am the server!");
         
@@ -15,6 +29,6 @@ class ChatServer {
         String serverIP = prop.getProperty("SERVER_IP");
         int serverPort = Integer.parseInt(prop.getProperty("SERVER_PORT"));
 
-        System.out.println("Attempting to connect to " + serverIP + ":" + serverPort);
     }
+    
 }
