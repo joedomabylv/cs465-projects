@@ -1,33 +1,51 @@
 package server;
 
 import java.io.*;
+import java.net.ServerSocket;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static utils.ServerPropHandler.getServerInfo;
-import message.Message;
 
-class ChatServer implements Runnable {
+class ChatServer {
 
     String serverIP;
     int serverPort;
+    public static ArrayList<NodeInfo> participants = new ArrayList<NodeInfo>();
+    
+    private ServerSocket server = null;
     
     public ChatServer(String serverIP, int serverPort) {
         this.serverIP = serverIP;
         this.serverPort = serverPort;
+        
+        // open the server socket
+        try {
+            server = new ServerSocket(serverPort);
+        } catch (IOException ex) {
+            Logger.getLogger(ChatServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
-    @Override
-    public void run() {
-        
+    public void runServerLoop() throws IOException {
+        while(true)
+        {
+            System.out.println("Looking for connection...");
+            new ChatServerWorker(server.accept()).start();
+            System.out.println("Connection received");
+        }
     }
     
     public static void main(String[] args) throws IOException {
-        System.out.println("Hello, I am the server!");
         
         // gather variables
         Properties prop = getServerInfo("config/server.properties");
         String serverIP = prop.getProperty("SERVER_IP");
         int serverPort = Integer.parseInt(prop.getProperty("SERVER_PORT"));
+        
+        // run the server
+        new ChatServer(serverIP, serverPort).runServerLoop();
 
     }
     

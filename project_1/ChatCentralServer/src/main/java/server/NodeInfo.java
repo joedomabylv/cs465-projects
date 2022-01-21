@@ -1,6 +1,8 @@
 package server;
 
-public class NodeInfo {
+import java.io.Serializable;
+
+public class NodeInfo implements Serializable {
     
     String serverIP;
     String name;
