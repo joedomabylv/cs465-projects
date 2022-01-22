@@ -31,7 +31,7 @@ class ChatServer {
     public void runServerLoop() throws IOException {
         while(true)
         {
-            System.out.println("Looking for connection...");
+            System.out.println("Looking for connections at " + this.serverIP + ":" + this.serverPort + ".");
             new ChatServerWorker(server.accept()).start();
             System.out.println("Connection received");
         }
@@ -43,8 +43,9 @@ class ChatServer {
         Properties prop = getServerInfo("config/server.properties");
         String serverIP = prop.getProperty("SERVER_IP");
         int serverPort = Integer.parseInt(prop.getProperty("SERVER_PORT"));
-        
+       
         // run the server
+        System.out.println("Creating server...");
         new ChatServer(serverIP, serverPort).runServerLoop();
 
     }

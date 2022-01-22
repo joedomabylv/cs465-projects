@@ -21,9 +21,11 @@ public class ChatClient implements Runnable {
     @Override
     public void run() {
         // start receiver
+        System.out.println("Starting Receiver.");
         (new Receiver(this.nodeInfo)).start();
 
         // start sender
+        System.out.println("Starting Sender.");
         (new Sender(this.nodeInfo)).start();
     }
 
@@ -38,6 +40,7 @@ public class ChatClient implements Runnable {
         System.out.println("Hello! What is your name?");
         String name = scanner.nextLine();
         
+        System.out.println("Hello, " + name + ", creating client...");
         // create client thread
         new ChatClient(serverIP, name, serverPort).run();
 

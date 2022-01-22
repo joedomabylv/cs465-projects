@@ -8,8 +8,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import message.Message;
 
+/**
+ * Receiver thread that listens for server output
+ * @author Joe
+ */
 public class Receiver extends Thread {
     
+    // declare variables
     NodeInfo nodeInfo = null;
     Socket serverConnection = null;
     ObjectInputStream fromServer = null;
