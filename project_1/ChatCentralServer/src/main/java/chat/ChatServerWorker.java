@@ -1,4 +1,4 @@
-package server;
+package chat;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,25 +24,19 @@ public class ChatServerWorker extends Thread {
     @Override
     public void run() {
         
-        // try to get the streams
+        // get the streams, cast the message, close the connection
         try {
-            this.fromClient = new ObjectInputStream(client.getInputStream());
-            this.toClients = new ObjectOutputStream(client.getOutputStream());
-        } catch (IOException ex) {
-            Logger.getLogger(ChatServerWorker.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        // try to cast to message
-        try {
-            // SOMETHING IS WRONG WITH THIS LINE
+            toClients = new ObjectOutputStream(client.getOutputStream());
+            fromClient = new ObjectInputStream(client.getInputStream());
             messageReceived = (Message) fromClient.readObject();
+            client.close();
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ChatServerWorker.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
         }
         
         // determine what to do with the message
-        messageType = messageReceived.getType();
-        switch (messageType) {
+        switch (messageReceived.getType()) {
             case Message.JOIN:                
                 // cast content to NodeInfo
                 NodeInfo newNode = (NodeInfo) messageReceived.getContent();
@@ -86,12 +80,6 @@ public class ChatServerWorker extends Thread {
                 break;
         }
 
-        // close the connection
-        try {
-            client.close();
-        } catch (IOException ex) {
-            Logger.getLogger(ChatServerWorker.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
     
 }

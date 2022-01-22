@@ -48,7 +48,8 @@ public class Sender extends Thread {
             
             if(userInput.equals("JOIN") && !isJoined)
             {
-                newMessage = new Message(Message.JOIN, this.nodeInfo);
+                System.out.println("sending join");
+                newMessage = new Message(Message.JOIN, nodeInfo);
                 isJoined = true;
             }
             else if(userInput.equals("LEAVE") && isJoined)
@@ -71,8 +72,8 @@ public class Sender extends Thread {
                 serverConnection = new Socket(nodeInfo.serverIP, 
                         nodeInfo.serverPort);
                 
-                objectOutputStream = new ObjectOutputStream(serverConnection.getOutputStream());
                 objectInputStream = new ObjectInputStream(serverConnection.getInputStream());
+                objectOutputStream = new ObjectOutputStream(serverConnection.getOutputStream());
                 
                 // try to write the object to the output stream
                 objectOutputStream.writeObject(newMessage);
