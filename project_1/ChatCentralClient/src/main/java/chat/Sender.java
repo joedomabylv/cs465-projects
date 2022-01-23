@@ -2,11 +2,13 @@ package chat;
 
 import java.io.*;
 import java.net.*;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import message.Message;
 import static message.MessageType.*;
+import static utils.ServerPropHandler.getServerInfo;
 
 /**
  * Sender thread that sends all user input to the server
@@ -17,7 +19,9 @@ public class Sender extends Thread {
     // declare variables
     Socket serverConnection = null;
     DataOutputStream toServer = null;
-    NodeInfo nodeInfo;
+    String serverIP = null;
+    int serverPort = -1;
+    NodeInfo nodeInfo = null;
     private static final Scanner scanner = new Scanner(System.in);
     
     // constructor
@@ -107,10 +111,15 @@ public class Sender extends Thread {
                 if(newMessage != null)
                 {
                     // message is not null, communicate with server
+                 
+                    // get server IP and server port
+                    Properties prop = getServerInfo("config/server.properties");
+                    serverIP = prop.getProperty("SERVER_IP");       
+                    serverPort = Integer.parseInt(prop.getProperty("SERVER_PORT"));
                     
                     // establish connection to server
-                    serverConnection = new Socket(nodeInfo.serverIP, 
-                            nodeInfo.serverPort);
+                    serverConnection = new Socket(serverIP, 
+                            serverPort);
 
                     // create IO streams
                     objectInputStream = new ObjectInputStream(serverConnection.getInputStream());

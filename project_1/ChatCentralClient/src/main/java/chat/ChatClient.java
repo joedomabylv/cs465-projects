@@ -18,8 +18,8 @@ public class ChatClient implements Runnable {
     private static final Scanner scanner = new Scanner(System.in);
     
     // constructor
-    public ChatClient(String serverIP, String name, int serverPort) {
-        this.nodeInfo = new NodeInfo(serverIP, name, serverPort);
+    public ChatClient(String clientIP, String name, int clientPort) {
+        this.nodeInfo = new NodeInfo(clientIP, name, clientPort);
     }
 
     @Override
@@ -61,22 +61,19 @@ public class ChatClient implements Runnable {
     }    
     
     public static void main(String[] args) throws IOException {
-
-        // gather server information
-        Properties prop = getServerInfo("config/server.properties");
-        String serverIP = prop.getProperty("SERVER_IP");
         
-        // uncomment the next line if you need your own IP for running
-        // this application over the internet, not localhost
-        // System.out.println(serverIP);
-        int serverPort = Integer.parseInt(prop.getProperty("SERVER_PORT"));
+        // get IP of the current machine
+        String clientIP = getMyIP();
+        
+        // make this port whatever you want the client to listen on
+        int clientPort = 20998;
         
         // ask the user for their name
         System.out.println("Hello! What is your name?");
         String name = scanner.nextLine();
         
         // create client thread
-        new ChatClient(serverIP, name, serverPort).run();
+        new ChatClient(clientIP, name, clientPort).run();
 
     }
 

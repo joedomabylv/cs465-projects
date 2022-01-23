@@ -6,15 +6,15 @@ public class NodeInfo implements Serializable {
    
     private static final long serialVersionUID = 6529685098267757690L;
 
-    String serverIP;
+    String clientIP;
     String name;
-    int serverPort;
+    int clientPort;
 
     // constructor
-    NodeInfo(String serverIP, String name, int serverPort) {
-        this.serverIP = serverIP;
+    NodeInfo(String clientIP, String name, int clientPort) {
+        this.clientIP = clientIP;
         this.name = name;
-        this.serverPort = serverPort;
+        this.clientPort = clientPort;
     }
 
 }

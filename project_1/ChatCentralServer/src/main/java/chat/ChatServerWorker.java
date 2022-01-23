@@ -44,6 +44,7 @@ public class ChatServerWorker extends Thread {
             
             // close connection
             client.close();
+
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ChatServerWorker.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
@@ -99,7 +100,11 @@ public class ChatServerWorker extends Thread {
             default: // user wants to SEND_NOTE
                 
                 // multiplex chat messages
-                
+                for(int i = 0; i < ChatServer.participants.size(); i++)
+                {
+                    sendMessage(ChatServer.participants.get(i), messageReceived);
+                }
+
                 break;
 
         }
@@ -112,6 +117,40 @@ public class ChatServerWorker extends Thread {
         }
         System.out.println(names);
         
+    }
+
+    /**
+     * Creates a connection to the client receiver and sends a message
+     * @param participant node of a client
+     * @param message message to be sent
+     */
+    private void sendMessage(NodeInfo participant, Message messageObject) {
+        
+        Socket clientReceiver;
+        ObjectOutputStream toReceiver;
+        ObjectInputStream fromReceiver = null;
+        String fullNote;
+        String messageString;
+        
+        try
+        {
+            System.out.println("Client IP: " + participant.clientIP);
+            System.out.println("Client Port: " + participant.clientPort);
+            
+            clientReceiver = new Socket(participant.clientIP, participant.clientPort);
+            toReceiver = new ObjectOutputStream(clientReceiver.getOutputStream());
+            fromReceiver = new ObjectInputStream(clientReceiver.getInputStream());
+            
+            messageString = (String) messageObject.getContent();
+            fullNote = participant.name + ": " + messageString;
+            
+            toReceiver.writeObject(fullNote);
+            
+            clientReceiver.close();
+        } catch (IOException ex)
+        {
+            Logger.getLogger(ChatServerWorker.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     /**
@@ -129,8 +168,8 @@ public class ChatServerWorker extends Thread {
         int currentPort;
         String currentName; // checking for name is primarily driven when
                             // testing only on localhost
-        String otherIP = otherNodeInfo.serverIP;
-        int otherPort = otherNodeInfo.serverPort;
+        String otherIP = otherNodeInfo.clientIP;
+        int otherPort = otherNodeInfo.clientPort;
         String otherName = otherNodeInfo.name;
         
         // loop through ArrayList
@@ -138,8 +177,8 @@ public class ChatServerWorker extends Thread {
         {
 
             // get IP/port from current participant in ArrayList
-            currentIP = ChatServer.participants.get(index).serverIP;
-            currentPort = ChatServer.participants.get(index).serverPort;
+            currentIP = ChatServer.participants.get(index).clientIP;
+            currentPort = ChatServer.participants.get(index).clientPort;
             currentName = ChatServer.participants.get(index).name;
             
             // compare IP's and port numbers
