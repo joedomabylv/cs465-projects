@@ -3,7 +3,10 @@ package chat;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import message.Message;
@@ -102,7 +105,15 @@ public class ChatServerWorker extends Thread {
                 // multiplex chat messages
                 for(int i = 0; i < ChatServer.participants.size(); i++)
                 {
-                    sendMessage(ChatServer.participants.get(i), messageReceived);
+                    SocketAddress currentIP = client.getRemoteSocketAddress();
+                    InetAddress inetAddress = ((InetSocketAddress)currentIP).getAddress();
+                    String ipAddress = inetAddress.toString().replace("/", "");
+                    System.out.println(ipAddress);
+                        
+                    if(!ChatServer.participants.get(i).clientIP.equals(ipAddress))
+                    {
+                        sendMessage(ChatServer.participants.get(i), messageReceived);
+                    }
                 }
 
                 break;
@@ -132,7 +143,7 @@ public class ChatServerWorker extends Thread {
         
         try
         {
-            
+            System.out.println("Establishing connection to " + participant.clientIP + ":" + participant.clientPort);
             clientReceiver = new Socket(participant.clientIP, participant.clientPort);
             toReceiver = new ObjectOutputStream(clientReceiver.getOutputStream());
             fromReceiver = new ObjectInputStream(clientReceiver.getInputStream());

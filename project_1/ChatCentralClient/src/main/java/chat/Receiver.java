@@ -25,6 +25,7 @@ public class Receiver extends Thread {
         
         try {
             // create a "listener" at the clients port
+            System.out.println("Receiver is listening on port " + nodeInfo.clientPort);
             serverReceiver = new ServerSocket(nodeInfo.clientPort);
         } catch (IOException ex) {
             Logger.getLogger(Receiver.class.getName()).log(Level.SEVERE, null, ex);       
