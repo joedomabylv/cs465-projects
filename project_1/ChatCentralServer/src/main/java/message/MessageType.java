@@ -1,6 +1,6 @@
 package message;
 
-interface MessageType {
+public interface MessageType {
 
     // constants
     static final int JOIN = 0;

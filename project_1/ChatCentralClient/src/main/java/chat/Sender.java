@@ -6,6 +6,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import message.Message;
+import static message.MessageType.*;
 
 /**
  * Sender thread that sends all user input to the server
@@ -29,10 +30,10 @@ public class Sender extends Thread {
         
         // declare variables
         Boolean isJoined = false;
-        String userInput = null;
-        Message newMessage = null;
-        ObjectOutputStream objectOutputStream = null;
-        ObjectInputStream objectInputStream = null;
+        String userInput;
+        Message newMessage;
+        ObjectOutputStream objectOutputStream;
+        ObjectInputStream objectInputStream;
         Boolean running = true;
         
         // display controls
@@ -48,53 +49,81 @@ public class Sender extends Thread {
             // get user input
             userInput = scanner.nextLine();
             
+            // ensure the message begins as a null object to avoid
+            // previous information being sent twice
+            newMessage = null;
+            
             // determine what to do with the input
-            if(userInput.equals("JOIN") && !isJoined)
+            if(userInput.equals("JOIN"))
             {
-                System.out.println("Sending JOIN message!");
-                newMessage = new Message(Message.JOIN, nodeInfo);
-                isJoined = true;
+                // check if the user is already JOINed
+                if(!isJoined)
+                {
+                    // user is not JOINed, they may JOIN
+                    newMessage = new Message(JOIN, nodeInfo);
+                    isJoined = true;
+                }
+                else
+                {
+                    System.out.println("You are already JOINed!");
+                }
             }
-            else if(userInput.equals("LEAVE") && isJoined)
+            else if(userInput.equals("LEAVE"))
             {
-                System.out.println("Sending LEAVE message!");
-                newMessage = new Message(Message.LEAVE, nodeInfo);
-                isJoined = false;
+                // check if user is JOINed, thus are eligible to LEAVE
+                if(isJoined)
+                {
+                    // user is JOINed, they may leave
+                    newMessage = new Message(LEAVE, nodeInfo);
+                    isJoined = false;
+                }
+                else
+                {
+                    System.out.println("You cannot leave a chat session "
+                            + "that you haven\'t JOINed!");
+                }
             }
             else if(userInput.equals("SHUTDOWN"))
             {
-                System.out.println("Sending SHUTDOWN message!");
-                newMessage = new Message(Message.SHUTDOWN, nodeInfo);
+                newMessage = new Message(SHUTDOWN, nodeInfo);
                 running = false;
             }
-            else if(isJoined)
+            else
             {
-                newMessage = new Message(Message.SEND_NOTE, userInput);
+                // check if the user is JOINed, thus are eligible to SEND_NOTE
+                if(isJoined)
+                {
+                    // user is JOINed, create new message
+                    newMessage = new Message(SEND_NOTE, userInput);
+                }
+                else
+                {
+                    System.out.println("Please JOIN the chat session before "
+                            + "trying to chat!");
+                }
             }
 
             // try to connect to the server, establish IO streams, and send message
             try {
-                // establish connection to server
-                System.out.println("Creating connection to " + nodeInfo.serverIP + ":" + nodeInfo.serverPort + "...");
-                serverConnection = new Socket(nodeInfo.serverIP, 
-                        nodeInfo.serverPort);
-                
-                // create IO streams
-                System.out.println("Creating IO streams...");
-                objectInputStream = new ObjectInputStream(serverConnection.getInputStream());
-                objectOutputStream = new ObjectOutputStream(serverConnection.getOutputStream());
-                
-                // write the object to the output stream
-                System.out.println("Writing object...");
-                objectOutputStream.writeObject(newMessage);
+                // check if the message is null
+                if(newMessage != null)
+                {
+                    // message is not null, communicate with server
+                    
+                    // establish connection to server
+                    serverConnection = new Socket(nodeInfo.serverIP, 
+                            nodeInfo.serverPort);
 
-                // close connection
-                System.out.println("Closing connection...");
-                serverConnection.close();
-                
-                // display success
-                System.out.println("Success!");
-                
+                    // create IO streams
+                    objectInputStream = new ObjectInputStream(serverConnection.getInputStream());
+                    objectOutputStream = new ObjectOutputStream(serverConnection.getOutputStream());
+
+                    // write the object to the output stream
+                    objectOutputStream.writeObject(newMessage);
+
+                    // close connection
+                    serverConnection.close();
+                }
             } catch (IOException ex) {
                 Logger.getLogger(Sender.class.getName()).log(Level.SEVERE, 
                         null, ex);

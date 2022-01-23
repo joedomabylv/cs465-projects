@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import message.Message;
+import static message.MessageType.*;
 
 /**
  * Server thread that takes care of all IO
@@ -20,6 +21,8 @@ public class ChatServerWorker extends Thread {
     ObjectOutputStream toClients = null;
     Message messageReceived = null;
     int messageType;
+    
+    // declare constants
     private final int NODE_NOT_FOUND = -9999999;
     
     // constructor
@@ -33,20 +36,15 @@ public class ChatServerWorker extends Thread {
         // get the streams, cast the message, close the connection
         try {
             // establish IO streams
-            System.out.println("Creating IO streams for client " + client.getLocalAddress() + client.getLocalPort() + "...");
             toClients = new ObjectOutputStream(client.getOutputStream());
             fromClient = new ObjectInputStream(client.getInputStream());
             
             // read the object and cast it to type Message
-            System.out.println("Casting read object to message...");
             messageReceived = (Message) fromClient.readObject();
             
             // close connection
-            System.out.println("Closing connection...");
             client.close();
             
-            // display results
-            System.out.println("Success!");
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ChatServerWorker.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
@@ -54,91 +52,101 @@ public class ChatServerWorker extends Thread {
         
         // determine what to do with the message
         switch (messageReceived.getType()) {
-            case Message.JOIN:
-                System.out.println("Received JOIN message!");
+            case JOIN: // user wants to JOIN
                 
                 // cast content to NodeInfo
                 NodeInfo newNode = (NodeInfo) messageReceived.getContent();
                 
                 // add the node
-                System.out.println("Adding participant to ArrayList...");
                 ChatServer.participants.add(newNode);
                 
-                System.out.println("Success!");
-                
+                // display to server console
+                System.out.println(newNode.name + " has joined!");
+                                
                 break;
-            case Message.LEAVE:            
-                System.out.println("Received LEAVE message!");
+            case LEAVE: // user wants to LEAVE       
                 
                 // cast content to NodeInfo
                 NodeInfo leaveNode = (NodeInfo) messageReceived.getContent();
                 
                 // attempt to remove the node
-                System.out.println("Removing participant from ArrayList...");
-                // find the node
-                int removeIndex = nodeEquals(leaveNode);
+                removeNode(leaveNode);
                 
-                if(removeIndex != NODE_NOT_FOUND)
-                {
-                    ChatServer.participants.remove(removeIndex);
-                    System.out.println("Success!");
-                }
-                else
-                {
-                    System.out.println("Could not find node!");
-                }
+                // display to server console
+                System.out.println(leaveNode.name + " has left!");
                 
                 break;
-            case Message.SHUTDOWN:
-                System.out.println("Received SHUTDOWN request!");
+            case SHUTDOWN: // user wants to SHUTDOWN
                 
                 // cast content to NodeInfo
                 NodeInfo shutdownNode = (NodeInfo) messageReceived.getContent();
                 
-                // check if the participant is considered joined, i.e. it is
-                // within the participants list
-                System.out.println("Checking if participant is JOINED...");
-                for(int i = 0; i < ChatServer.participants.size(); i++)
+                // check if the node is in the list, i.e. it is considered
+                // JOINed
+                if(isInList(shutdownNode))
                 {
-                    // if found, remove it
-                    if(ChatServer.participants.get(i).equals(shutdownNode))
-                    {
-                        System.out.println("Participant found, removing from ArrayList...");
-                        ChatServer.participants.remove(shutdownNode);
-                    }
-                    
-                    // NOTE: if the node is NOT found, do nothing
-                    
+                    // the node is in the list, remove it
+                    removeNode(shutdownNode);
                 }
                 
-                System.out.println("Success!");
+                // NOTE: if the node is not found in the list, the node already
+                // send a LEAVE request. do nothing.
                 
+                // display to server console
+                System.out.println(shutdownNode.name + " has shutdown!");
+     
                 break;
-            default:
+                
+            default: // user wants to SEND_NOTE
                 System.out.println(messageReceived.getContent());
                 
                 // multiplex chat messages
                 
                 break;
+
         }
 
+        // temp debug message
+        String names = "Names: ";
+        for(int i = 0; i < ChatServer.participants.size(); i++)
+        {
+            names += ChatServer.participants.get(i).name + " ";
+        }
+        System.out.println(names);
+        
     }
     
-    private int nodeEquals(NodeInfo otherNodeInfo) {
+    /**
+     * Finds the index of a given node that is equivalent to the node passed
+     * into the method
+     * 
+     * @param otherNodeInfo the node to be compared to
+     * @return index of equivalent node or signal that the node was not found
+     */
+    private int getIndex(NodeInfo otherNodeInfo) {
+        
         // declare variables
         int index;
         String currentIP;
         int currentPort;
+        String currentName; // checking for name is primarily driven when
+                            // testing only on localhost
         String otherIP = otherNodeInfo.serverIP;
         int otherPort = otherNodeInfo.serverPort;
+        String otherName = otherNodeInfo.name;
         
         // loop through ArrayList
         for(index = 0; index < ChatServer.participants.size(); index++)
         {
+            // get IP/port from current participant in ArrayList
             currentIP = ChatServer.participants.get(index).serverIP;
             currentPort = ChatServer.participants.get(index).serverPort;
+            currentName = ChatServer.participants.get(index).name;
+            
             // compare IP's and port numbers
-            if(currentIP.equals(otherIP) && currentPort == otherPort)
+            if(currentIP.equals(otherIP)
+                   && currentPort == otherPort
+                   && currentName.equals(otherName))
             {
                 // return found index
                 return index;
@@ -147,6 +155,47 @@ public class ChatServerWorker extends Thread {
         
         // node wasn't found
         return NODE_NOT_FOUND;
+    }
+    
+    /**
+     * Attempts to remove a given node from the 'participants' ArrayList 
+     * @param nodeToRemove node to be removed
+     * @return Boolean success or failure
+     */
+    private Boolean removeNode(NodeInfo nodeToRemove) {
+        // get the index of the node to be removed
+        int removeIndex = getIndex(nodeToRemove);
+        
+        // check if the index was found
+        if(removeIndex != NODE_NOT_FOUND)
+        {
+            // remove the node
+            ChatServer.participants.remove(removeIndex);
+            // return success
+            return true;
+        }
+        // return failure
+        return false;
+    }
+    
+    /**
+     * Helper function to determine whether or not a node exists within the
+     * 'participants' ArrayList
+     * @param node target node
+     * @return true if found, false if not found
+     */
+    private Boolean isInList(NodeInfo node) {
+        // get the index of the target node
+        int nodeIndex = getIndex(node);
+        
+        // check if the node was found
+        if(nodeIndex != NODE_NOT_FOUND)
+        {
+            // return success
+            return true;
+        }
+        // return failure
+        return false;
     }
     
 }
