@@ -98,32 +98,40 @@ public class ChatServerWorker extends Thread {
                 // display to server console
                 System.out.println(shutdownNode.name + " has shutdown!");
      
-                break;
-                
+                break;               
             default: // user wants to SEND_NOTE
                 
-                // multiplex chat messages
-                for(int i = 0; i < ChatServer.participants.size(); i++)
+                // establish variables for SEND_NOTE case
+                String senderName = "NOT FOUND";
+                int loopIndex;
+                
+                // determine the name of the sender
+                for(loopIndex = 0; loopIndex < ChatServer.participants.size(); loopIndex++)
                 {
+                    // get the IP of the client that requested SEND_NOTE
                     SocketAddress currentIP = client.getRemoteSocketAddress();
                     InetAddress inetAddress = ((InetSocketAddress)currentIP).getAddress();
+                    
+                    // convert the IP to a string
                     String ipAddress = inetAddress.toString().replace("/", "");
-                    System.out.println(ipAddress);
-                        
-                    if(!ChatServer.participants.get(i).clientIP.equals(ipAddress))
+                    
+                    // compare that IP with each member of the 'participants' list
+                    if(ipAddress.equals(ChatServer.participants.get(loopIndex).clientIP))
                     {
-                        sendMessage(ChatServer.participants.get(i), messageReceived);
+                        // found a match, take senders name
+                        senderName = ChatServer.participants.get(loopIndex).name;
                     }
+                }
+                
+                // multiplex chat messages to each active client
+                // note: includes the client that sent the message
+                for(loopIndex = 0; loopIndex < ChatServer.participants.size(); loopIndex++)
+                {
+                    sendMessage(senderName, loopIndex, messageReceived);
                 }
 
                 break;
 
-        }
-
-        // temp debug message
-        for(int i = 0; i < ChatServer.participants.size(); i++)
-        {
-            System.out.println("User " + ChatServer.participants.get(i).name + "\n\t> IP: " + ChatServer.participants.get(i).clientIP + "\n\t> Port: " + ChatServer.participants.get(i).clientPort);
         }
         
     }
@@ -133,27 +141,40 @@ public class ChatServerWorker extends Thread {
      * @param participant node of a client
      * @param message message to be sent
      */
-    private void sendMessage(NodeInfo participant, Message messageObject) {
+    private void sendMessage(String senderName, int participantIndex, Message messageObject) {
         
+        // declare variables
         Socket clientReceiver;
         ObjectOutputStream toReceiver;
         ObjectInputStream fromReceiver = null;
         String fullNote;
         String messageString;
         
+        // attempt to send the message
         try
         {
-            System.out.println("Establishing connection to " + participant.clientIP + ":" + participant.clientPort);
-            clientReceiver = new Socket(participant.clientIP, participant.clientPort);
+            // get the nodeInfo of the receiver
+            NodeInfo node = ChatServer.participants.get(participantIndex);
+            
+            // establish a connection to the receiver socket
+            clientReceiver = new Socket(node.clientIP, node.clientPort);
+            
+            // establish IO streams
             toReceiver = new ObjectOutputStream(clientReceiver.getOutputStream());
             fromReceiver = new ObjectInputStream(clientReceiver.getInputStream());
             
+            // cast the message content to a String
             messageString = (String) messageObject.getContent();
-            fullNote = participant.name + ": " + messageString;
             
+            // prepend the senders name to the message
+            fullNote = senderName + ": " + messageString;
+            
+            // write the message to the output stream
             toReceiver.writeObject(fullNote);
             
+            // close the connection
             clientReceiver.close();
+            
         } catch (IOException ex)
         {
             Logger.getLogger(ChatServerWorker.class.getName()).log(Level.SEVERE, null, ex);
@@ -175,7 +196,6 @@ public class ChatServerWorker extends Thread {
         // loop through ArrayList
         for(index = 0; index < ChatServer.participants.size(); index++)
         {
-
             if(nodeEquals(ChatServer.participants.get(index), otherNodeInfo)) {
                 return index;
             }
@@ -204,6 +224,7 @@ public class ChatServerWorker extends Thread {
      * @return Boolean success or failure
      */
     private Boolean removeNode(NodeInfo nodeToRemove) {
+        
         // get the index of the node to be removed
         int removeIndex = getIndex(nodeToRemove);
         

@@ -8,9 +8,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.*;
 
-// custom imports
-import static utils.ServerPropHandler.getServerInfo;
-
 public class ChatClient implements Runnable {
     
     // declare variables
