@@ -17,6 +17,7 @@ import static utils.ServerPropHandler.getServerInfo;
 public class Sender extends Thread {
     
     // declare variables
+    Boolean isJoined = false;
     Socket serverConnection = null;
     DataOutputStream toServer = null;
     String serverIP = null;
@@ -33,12 +34,10 @@ public class Sender extends Thread {
     public void run() {
         
         // declare variables
-        Boolean isJoined = false;
         String userInput;
         Message newMessage;
         ObjectOutputStream objectOutputStream;
         ObjectInputStream objectInputStream;
-        Boolean running = true;
         
         // display controls
         System.out.println("Type \'JOIN\' to join the chat\n"
@@ -47,7 +46,7 @@ public class Sender extends Thread {
                          + "Otherwise, start chatting!");
 
         // run sender client
-        while(running)
+        while(ChatClient.running)
         {
 
             // get user input
@@ -88,7 +87,7 @@ public class Sender extends Thread {
                     break;
                 case "SHUTDOWN":
                     newMessage = new Message(SHUTDOWN, nodeInfo);
-                    running = false;
+                    ChatClient.running = false;
                     break;
                 default:
                     // check if the user is JOINed, thus are eligible to SEND_NOTE

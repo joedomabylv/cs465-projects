@@ -16,6 +16,7 @@ public class ChatClient implements Runnable {
     // declare variables
     NodeInfo nodeInfo;
     private static final Scanner scanner = new Scanner(System.in);
+    public static Boolean running = true;
     
     // constructor
     public ChatClient(String clientIP, String name, int clientPort) {

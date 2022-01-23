@@ -110,12 +110,10 @@ public class ChatServerWorker extends Thread {
         }
 
         // temp debug message
-        String names = "Names: ";
         for(int i = 0; i < ChatServer.participants.size(); i++)
         {
-            names += ChatServer.participants.get(i).name + " ";
+            System.out.println("User " + ChatServer.participants.get(i).name + "\n\t> IP: " + ChatServer.participants.get(i).clientIP + "\n\t> Port: " + ChatServer.participants.get(i).clientPort);
         }
-        System.out.println(names);
         
     }
 
@@ -134,8 +132,6 @@ public class ChatServerWorker extends Thread {
         
         try
         {
-            System.out.println("Client IP: " + participant.clientIP);
-            System.out.println("Client Port: " + participant.clientPort);
             
             clientReceiver = new Socket(participant.clientIP, participant.clientPort);
             toReceiver = new ObjectOutputStream(clientReceiver.getOutputStream());
