@@ -160,35 +160,31 @@ public class ChatServerWorker extends Thread {
         
         // declare variables
         int index;
-        String currentIP;
-        int currentPort;
-        String currentName; // checking for name is primarily driven when
-                            // testing only on localhost
-        String otherIP = otherNodeInfo.clientIP;
-        int otherPort = otherNodeInfo.clientPort;
-        String otherName = otherNodeInfo.name;
         
         // loop through ArrayList
         for(index = 0; index < ChatServer.participants.size(); index++)
         {
 
-            // get IP/port from current participant in ArrayList
-            currentIP = ChatServer.participants.get(index).clientIP;
-            currentPort = ChatServer.participants.get(index).clientPort;
-            currentName = ChatServer.participants.get(index).name;
-            
-            // compare IP's and port numbers
-            if(currentIP.equals(otherIP)
-                   && currentPort == otherPort
-                   && currentName.equals(otherName))
-            {
-                // return found index
+            if(nodeEquals(ChatServer.participants.get(index), otherNodeInfo)) {
                 return index;
             }
         }
         
         // node wasn't found
         return NODE_NOT_FOUND;
+    }
+    
+    /**
+     * Check if two nodes are equivalent based on IP, port, and name
+     * @param firstNode first node to be compared to the second
+     * @param secondNode second node to be compared to the first
+     * @return returns Boolean equivalence
+     */
+    private Boolean nodeEquals(NodeInfo firstNode, NodeInfo secondNode)
+    {
+        return (firstNode.clientIP.equals(secondNode.clientIP)
+                && firstNode.clientPort == secondNode.clientPort
+                && firstNode.name.equals(secondNode.name));
     }
     
     /**
