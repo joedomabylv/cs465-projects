@@ -18,7 +18,7 @@ public class ChatServerWorker extends Thread {
     // declare variables
     Socket client = null;
     ObjectInputStream fromClient = null;
-    ObjectOutputStream toClients = null;
+    ObjectOutputStream toClient = null;
     Message messageReceived = null;
     int messageType;
     
@@ -36,7 +36,7 @@ public class ChatServerWorker extends Thread {
         // get the streams, cast the message, close the connection
         try {
             // establish IO streams
-            toClients = new ObjectOutputStream(client.getOutputStream());
+            toClient = new ObjectOutputStream(client.getOutputStream());
             fromClient = new ObjectInputStream(client.getInputStream());
             
             // read the object and cast it to type Message
@@ -44,7 +44,6 @@ public class ChatServerWorker extends Thread {
             
             // close connection
             client.close();
-            
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ChatServerWorker.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
@@ -98,7 +97,6 @@ public class ChatServerWorker extends Thread {
                 break;
                 
             default: // user wants to SEND_NOTE
-                System.out.println(messageReceived.getContent());
                 
                 // multiplex chat messages
                 
@@ -138,6 +136,7 @@ public class ChatServerWorker extends Thread {
         // loop through ArrayList
         for(index = 0; index < ChatServer.participants.size(); index++)
         {
+
             // get IP/port from current participant in ArrayList
             currentIP = ChatServer.participants.get(index).serverIP;
             currentPort = ChatServer.participants.get(index).serverPort;
@@ -185,17 +184,8 @@ public class ChatServerWorker extends Thread {
      * @return true if found, false if not found
      */
     private Boolean isInList(NodeInfo node) {
-        // get the index of the target node
-        int nodeIndex = getIndex(node);
-        
-        // check if the node was found
-        if(nodeIndex != NODE_NOT_FOUND)
-        {
-            // return success
-            return true;
-        }
-        // return failure
-        return false;
+        // determine index and return result
+        return getIndex(node) != NODE_NOT_FOUND;
     }
     
 }

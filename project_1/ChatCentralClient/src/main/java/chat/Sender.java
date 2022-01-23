@@ -54,53 +54,51 @@ public class Sender extends Thread {
             newMessage = null;
             
             // determine what to do with the input
-            if(userInput.equals("JOIN"))
-            {
-                // check if the user is already JOINed
-                if(!isJoined)
-                {
-                    // user is not JOINed, they may JOIN
-                    newMessage = new Message(JOIN, nodeInfo);
-                    isJoined = true;
-                }
-                else
-                {
-                    System.out.println("You are already JOINed!");
-                }
-            }
-            else if(userInput.equals("LEAVE"))
-            {
-                // check if user is JOINed, thus are eligible to LEAVE
-                if(isJoined)
-                {
-                    // user is JOINed, they may leave
-                    newMessage = new Message(LEAVE, nodeInfo);
-                    isJoined = false;
-                }
-                else
-                {
-                    System.out.println("You cannot leave a chat session "
-                            + "that you haven\'t JOINed!");
-                }
-            }
-            else if(userInput.equals("SHUTDOWN"))
-            {
-                newMessage = new Message(SHUTDOWN, nodeInfo);
-                running = false;
-            }
-            else
-            {
-                // check if the user is JOINed, thus are eligible to SEND_NOTE
-                if(isJoined)
-                {
-                    // user is JOINed, create new message
-                    newMessage = new Message(SEND_NOTE, userInput);
-                }
-                else
-                {
-                    System.out.println("Please JOIN the chat session before "
+            switch (userInput) {
+                case "JOIN":
+                    // check if the user is already JOINed
+                    if(!isJoined)
+                    {
+                        // user is not JOINed, they may JOIN
+                        newMessage = new Message(JOIN, nodeInfo);
+                        isJoined = true;
+                    }
+                    else
+                    {
+                        System.out.println("You are already JOINed!");
+                    }
+                    break;
+                case "LEAVE":
+                    // check if user is JOINed, thus are eligible to LEAVE
+                    if(isJoined)
+                    {
+                        // user is JOINed, they may leave
+                        newMessage = new Message(LEAVE, nodeInfo);
+                        isJoined = false;
+                    }
+                    else
+                    {
+                        System.out.println("You cannot leave a chat session "
+                                + "that you haven\'t JOINed!");
+                    }
+                    break;
+                case "SHUTDOWN":
+                    newMessage = new Message(SHUTDOWN, nodeInfo);
+                    running = false;
+                    break;
+                default:
+                    // check if the user is JOINed, thus are eligible to SEND_NOTE
+                    if(isJoined)
+                    {
+                        // user is JOINed, create new message
+                        newMessage = new Message(SEND_NOTE, userInput);
+                    }
+                    else
+                    {
+                        System.out.println("Please JOIN the chat session before "
                             + "trying to chat!");
-                }
+                    }
+                    break;
             }
 
             // try to connect to the server, establish IO streams, and send message

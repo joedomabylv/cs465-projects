@@ -12,7 +12,7 @@ class ChatServer {
 
     String serverIP;
     int serverPort;
-    public static ArrayList<NodeInfo> participants = new ArrayList<NodeInfo>();
+    public static ArrayList<NodeInfo> participants = new ArrayList<>();
     
     private ServerSocket server = null;
     
@@ -31,7 +31,6 @@ class ChatServer {
     public void runServerLoop() throws IOException {
         while(true)
         {
-            System.out.println("Looking for connections to " + this.serverIP + ":" + this.serverPort + ".");
             new ChatServerWorker(server.accept()).start();
         }
     }
