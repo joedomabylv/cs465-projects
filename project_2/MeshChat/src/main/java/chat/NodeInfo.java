@@ -10,14 +10,14 @@ public class NodeInfo implements Serializable {
 
     private static final long serialVersionUID = 6529685098267757690L;
     
-    String clientIP;
+    String peerIP;
     String name;
-    int clientPort;
+    int peerPort;
     
-    NodeInfo(String clientIP, String name, int clientPort) {
-        this.clientIP = clientIP;
+    NodeInfo(String peerIP, String name, int peerPort) {
+        this.peerIP = peerIP;
         this.name = name;
-        this.clientPort = clientPort;
+        this.peerPort = peerPort;
     }
     
 }

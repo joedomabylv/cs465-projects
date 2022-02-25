@@ -7,7 +7,6 @@ import java.util.Properties;
 
 /**
  * Property handler that reads properties from an external file
- * @author Joe Domabyl V
  */
 public class PropHandler {
     

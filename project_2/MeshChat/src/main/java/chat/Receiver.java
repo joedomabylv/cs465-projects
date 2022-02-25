@@ -2,6 +2,7 @@ package chat;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,7 +14,7 @@ public class Receiver extends Thread {
     
     // declare variables
     NodeInfo nodeInfo = null;
-    ServerSocket clientReceiver = null;
+    ServerSocket peerReceiver = null;
     
     // constructor
     public Receiver(NodeInfo nodeInfo) {
@@ -23,8 +24,8 @@ public class Receiver extends Thread {
         try {
             // create a "listener" at the clients port
             System.out.println("Receiver is listening on port " + 
-                    nodeInfo.clientPort);
-            clientReceiver = new ServerSocket(nodeInfo.clientPort);
+                    nodeInfo.peerPort);
+            peerReceiver = new ServerSocket(nodeInfo.peerPort);
         } catch (IOException ex) {
             Logger.getLogger(Receiver.class.getName()).log(
                     Level.SEVERE, null, ex);       
@@ -34,16 +35,30 @@ public class Receiver extends Thread {
     @Override
     public void run() {
 
-        try
+        // run receiver
+        while(MeshClient.running)
         {
-            // accept a new connection
-            new ReceiverWorker(clientReceiver.accept()).start();
-        } 
-        catch (IOException ex)
-        {
-            Logger.getLogger(Receiver.class.getName()).log(
-                    Level.SEVERE, null, ex);
-        } 
+            try
+            {
+                
+                // establish timeout in milliseconds such that if the client
+                // sends a shutdown request, the receiver thread will stop
+                // looking for a connection after 3 seconds
+                peerReceiver.setSoTimeout(3000);
+                
+                // accept a new connection
+                new ReceiverWorker(peerReceiver.accept()).start();
+            }
+            catch (SocketTimeoutException ex)
+            {
+                // do nothing, just check again
+            }
+            catch (IOException ex)
+            {
+                Logger.getLogger(Receiver.class.getName()).log(
+                        Level.SEVERE, null, ex);
+            }
+        }
     }
     
 }
