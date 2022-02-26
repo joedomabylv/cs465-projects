@@ -126,13 +126,13 @@ public class Sender extends Thread {
                 {
                     // message is not null, communicate with peers
                  
-                    // check if the arraylist of participants is empty,
+                    // check if the arraylist of participants only contains self,
                     // thus we need to assume that this peer "just knows"
                     // the IP/port of one other peer
                     // NOTE: in essence, this will only be used to JOIN before
                     //       the application is "warmed up"
 
-                    if(MeshClient.participants.isEmpty())
+                    if(MeshClient.participants.size() == 1)
                     {
                         // get the IP and port of the Peer that we're assuming
                         // we already know
@@ -142,21 +142,6 @@ public class Sender extends Thread {
 
                         new SenderWorker(new Socket(peerIP, peerPort),
                                                     newMessage).start();
-                        
-                        // wait to receive the participants list from the known
-                        // sender
-                        while(MeshClient.receivedParticipantsList)
-                        {
-                            // once received, send the JOIN to everyone else in
-                            // that list
-                            for (NodeInfo participant: MeshClient.participants)
-                            {
-                                new SenderWorker(new Socket(participant.peerIP,
-                                                     participant.peerPort),
-                                                 newMessage).start();
-                            }
-                        }
-                        MeshClient.receivedParticipantsList = false;
                     }
                     else
                     {

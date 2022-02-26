@@ -16,7 +16,7 @@ import java.util.Scanner;
 public class MeshClient implements Runnable {
     
     // declare variables
-    NodeInfo nodeInfo;
+    public static NodeInfo nodeInfo;
     private static final Scanner scanner = new Scanner(System.in);
     public static Boolean running = true;
     public static ArrayList<NodeInfo> participants = new ArrayList<>();
@@ -26,6 +26,9 @@ public class MeshClient implements Runnable {
     public MeshClient(String clientIP, String name, int clientPort) {
         // create nodeInfo object
         this.nodeInfo = new NodeInfo(clientIP, name, clientPort);
+        
+        // add self to participants list
+        participants.add(this.nodeInfo);
     }
 
     @Override
@@ -95,7 +98,6 @@ public class MeshClient implements Runnable {
             {
                 // if the client wants to act as the peer everyone knows, they
                 // use localhost as the IP and Dr. Otte's birthday as a port
-                System.out.println(clientIP);
                 clientPort = 23657;
                 
                 // break out of the loop
@@ -103,9 +105,8 @@ public class MeshClient implements Runnable {
             }
             else if(knownPeerInput.equals("2"))
             {
-                // if the client wants to be the second peer, they use the IP
-                // of the current machine and their own port
-                clientIP = "127.0.0.1";
+                // if the client wants to be the second peer, they use their own
+                // IP and a random port
                 clientPort = 10998;
                 
                 // break out of the loop
@@ -113,17 +114,16 @@ public class MeshClient implements Runnable {
             }
             else if(knownPeerInput.equals("3"))
             {
-                // if the client wants to be the third peer, they use a random
+                // if the client wants to be the third peer, they use their own
                 // IP and a random port
-                clientIP = "248.235.64.79";
-                clientPort = 10998;
+                clientPort = 20998;
                 
                 // break out of the loop
                 invalidSetup = false;
             }
             else
             {
-                System.out.println("Please type either \'y\' or \'n\'!");
+                System.out.println("Please type either \'1\', \'2\', or \'3\'!");
             }
         }
                 

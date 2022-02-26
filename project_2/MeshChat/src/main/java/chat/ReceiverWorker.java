@@ -51,31 +51,27 @@ public class ReceiverWorker extends Thread {
                 case JOIN:
                     // a peer wants to join, send them some nodeInfo
                     
-                    // check if the JOINING participant is already in the list
-                    // NOTE: this should never happen, but just in case
-                    
                     // cast content to NodeInfo
                     messageNodeInfo = (NodeInfo) messageContent;
-                   
-                    
-                    if(!MeshClient.participants.contains(messageNodeInfo))
+                    System.out.println("Got a JOIN from"
+                            + " :" + messageNodeInfo.name + ":"
+                            + messageNodeInfo.peerIP + ":"
+                            + messageNodeInfo.peerPort);
+                    System.out.println("check if they're in the list");
+                    // check if the participant is already in the list
+                    if(!isInList(messageNodeInfo))
                     {
-                        System.out.println("Adding " + messageNodeInfo.name + ":" + messageNodeInfo.peerIP + ":" + messageNodeInfo.peerPort + " to the participants list");
+                        System.out.println("=======They\'re not, adding them");
                         // add the new user to the list
                         MeshClient.participants.add(messageNodeInfo);
-                        
+
                         // send the sender back this participants list
                         message = new Message(SEND_LIST, MeshClient.participants);
                         new SenderWorker(new Socket(messageNodeInfo.peerIP,
                                                     messageNodeInfo.peerPort),
                                                     message).start();
-                        
                     }
-                    else
-                    {
-                        System.out.println("This participant is already in "
-                                + "the list!");
-                    }
+                    System.out.println("========They\'re IN THE LIST");
                     break;
                 case LEAVE:
                     // a peer wants to leave, remove them from this participants
@@ -110,9 +106,24 @@ public class ReceiverWorker extends Thread {
                     System.exit(0);
                 case SEND_LIST:
                     // a peer sent a list of participants, take it
+                    System.out.println("got a list from someone");
                     messageList = (ArrayList<NodeInfo>) messageContent;
                     MeshClient.participants = messageList;
-                    MeshClient.receivedParticipantsList = true;
+                    
+                    // in order to have received a list of participants, this
+                    // peer must have just sent a JOIN, they must send their
+                    // JOIN to the rest of the peers in the new list
+                    
+                    // create a new JOIN message using this peers NodeInfo
+                    Message joinMessage = new Message(JOIN, MeshClient.nodeInfo);
+                    
+                    // send the NodeInfo to each participant
+                    for(NodeInfo participant: MeshClient.participants)
+                    {
+                        new SenderWorker(new Socket(participant.peerIP,
+                                                    participant.peerPort),
+                                                joinMessage).start();
+                    }
                     break;
                 default:
                     // a peer is sending a note, display it
@@ -135,5 +146,39 @@ public class ReceiverWorker extends Thread {
             Logger.getLogger(ReceiverWorker.class.getName()).log(
                     Level.SEVERE, null, ex);
         }
+    }
+    
+    /**
+     * Check if a participant exists in the participants list
+     * @param newParticipant the new participant looking to be added
+     * @return true if found, false if not
+     */
+    public Boolean isInList(NodeInfo newParticipant)
+    {
+        // initialize variables
+        String newName = newParticipant.name;
+        String newIP = newParticipant.peerIP;
+        int newPort = newParticipant.peerPort;
+        
+        // loop through the entire list
+        for(NodeInfo participant: MeshClient.participants)
+        {
+            System.out.println("Checking " + newName + " against " + participant.name);
+            System.out.println("Checking " + newIP + " against " + participant.peerIP);
+            System.out.println("Checking " + newPort + " against " + participant.peerPort);
+
+            // compare against each variable
+            // NOTE: not checking against IP because, for the sake of the
+            //       assignment, two peers need to be on their own localhost
+            if(participant.name.equals(newName)
+                || participant.peerPort == newPort)
+            {
+                // if found, return true 
+                return true;
+            }
+        }
+        
+        // participant was not found, return false
+        return false;
     }
 }
