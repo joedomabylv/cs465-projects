@@ -20,7 +20,7 @@ public class MeshClient implements Runnable {
     private static final Scanner scanner = new Scanner(System.in);
     public static Boolean running = true;
     public static ArrayList<NodeInfo> participants = new ArrayList<>();
-    public static Boolean handlingParticipants = false;
+    public static Boolean receivedParticipantsList = false;
     
     // constructor
     public MeshClient(String clientIP, String name, int clientPort) {
@@ -95,7 +95,7 @@ public class MeshClient implements Runnable {
             {
                 // if the client wants to act as the peer everyone knows, they
                 // use localhost as the IP and Dr. Otte's birthday as a port
-                clientIP = "127.0.0.1";
+                System.out.println(clientIP);
                 clientPort = 23657;
                 
                 // break out of the loop
@@ -105,7 +105,8 @@ public class MeshClient implements Runnable {
             {
                 // if the client wants to be the second peer, they use the IP
                 // of the current machine and their own port
-                clientPort = 20998;
+                clientIP = "127.0.0.1";
+                clientPort = 10998;
                 
                 // break out of the loop
                 invalidSetup = false;

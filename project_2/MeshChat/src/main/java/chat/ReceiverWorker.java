@@ -56,9 +56,11 @@ public class ReceiverWorker extends Thread {
                     
                     // cast content to NodeInfo
                     messageNodeInfo = (NodeInfo) messageContent;
+                   
                     
                     if(!MeshClient.participants.contains(messageNodeInfo))
                     {
+                        System.out.println("Adding " + messageNodeInfo.name + ":" + messageNodeInfo.peerIP + ":" + messageNodeInfo.peerPort + " to the participants list");
                         // add the new user to the list
                         MeshClient.participants.add(messageNodeInfo);
                         
@@ -110,6 +112,7 @@ public class ReceiverWorker extends Thread {
                     // a peer sent a list of participants, take it
                     messageList = (ArrayList<NodeInfo>) messageContent;
                     MeshClient.participants = messageList;
+                    MeshClient.receivedParticipantsList = true;
                     break;
                 default:
                     // a peer is sending a note, display it
@@ -119,6 +122,12 @@ public class ReceiverWorker extends Thread {
 
             // close the connection
             peerConnection.close();
+            
+            for(NodeInfo participant: MeshClient.participants)
+            {
+                System.out.print("| " + participant.name + ", " + participant.peerIP + ":" + participant.peerPort + " |");
+            }
+            System.out.println("");
             
         }
         catch (IOException | ClassNotFoundException ex)

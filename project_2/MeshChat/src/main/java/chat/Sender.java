@@ -142,6 +142,21 @@ public class Sender extends Thread {
 
                         new SenderWorker(new Socket(peerIP, peerPort),
                                                     newMessage).start();
+                        
+                        // wait to receive the participants list from the known
+                        // sender
+                        while(MeshClient.receivedParticipantsList)
+                        {
+                            // once received, send the JOIN to everyone else in
+                            // that list
+                            for (NodeInfo participant: MeshClient.participants)
+                            {
+                                new SenderWorker(new Socket(participant.peerIP,
+                                                     participant.peerPort),
+                                                 newMessage).start();
+                            }
+                        }
+                        MeshClient.receivedParticipantsList = false;
                     }
                     else
                     {
@@ -150,7 +165,6 @@ public class Sender extends Thread {
 
                         // loop through each participant in the list and 
                         // create a new thread
-                        System.out.println("Sending a " + newMessage.getType() + " message");
                         for (NodeInfo participant: MeshClient.participants)
                         {
                             new SenderWorker(new Socket(participant.peerIP,
