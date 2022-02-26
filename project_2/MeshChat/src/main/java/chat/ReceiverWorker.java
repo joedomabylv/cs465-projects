@@ -45,7 +45,7 @@ public class ReceiverWorker extends Thread {
             // read the message type and react accordingly
             messageType = message.getType();
             messageContent = message.getContent();
-            
+                        
             switch(messageType)
             {
                 case JOIN:
@@ -53,15 +53,10 @@ public class ReceiverWorker extends Thread {
                     
                     // cast content to NodeInfo
                     messageNodeInfo = (NodeInfo) messageContent;
-                    System.out.println("Got a JOIN from"
-                            + " :" + messageNodeInfo.name + ":"
-                            + messageNodeInfo.peerIP + ":"
-                            + messageNodeInfo.peerPort);
-                    System.out.println("check if they're in the list");
+
                     // check if the participant is already in the list
                     if(!isInList(messageNodeInfo))
                     {
-                        System.out.println("=======They\'re not, adding them");
                         // add the new user to the list
                         MeshClient.participants.add(messageNodeInfo);
 
@@ -70,8 +65,10 @@ public class ReceiverWorker extends Thread {
                         new SenderWorker(new Socket(messageNodeInfo.peerIP,
                                                     messageNodeInfo.peerPort),
                                                     message).start();
+                        
+                        // inform the user of a new peer
+                        System.out.println(messageNodeInfo.name + " has joined!");
                     }
-                    System.out.println("========They\'re IN THE LIST");
                     break;
                 case LEAVE:
                     // a peer wants to leave, remove them from this participants
@@ -86,8 +83,9 @@ public class ReceiverWorker extends Thread {
                     for(Iterator<NodeInfo> iterator = MeshClient.participants.iterator(); iterator.hasNext(); )
                     {
                         String name = iterator.next().name;
-                        if(name.equals(messageNodeInfo.name))
+                        if(name.equals(messageNodeInfo.name) && !name.equals(MeshClient.nodeInfo.name))
                         {
+                            System.out.println(messageNodeInfo.name + " has left!");
                             iterator.remove();
                         }
                     }
@@ -106,7 +104,7 @@ public class ReceiverWorker extends Thread {
                     System.exit(0);
                 case SEND_LIST:
                     // a peer sent a list of participants, take it
-                    System.out.println("got a list from someone");
+
                     messageList = (ArrayList<NodeInfo>) messageContent;
                     MeshClient.participants = messageList;
                     
@@ -134,12 +132,6 @@ public class ReceiverWorker extends Thread {
             // close the connection
             peerConnection.close();
             
-            for(NodeInfo participant: MeshClient.participants)
-            {
-                System.out.print("| " + participant.name + ", " + participant.peerIP + ":" + participant.peerPort + " |");
-            }
-            System.out.println("");
-            
         }
         catch (IOException | ClassNotFoundException ex)
         {
@@ -157,15 +149,11 @@ public class ReceiverWorker extends Thread {
     {
         // initialize variables
         String newName = newParticipant.name;
-        String newIP = newParticipant.peerIP;
         int newPort = newParticipant.peerPort;
         
         // loop through the entire list
         for(NodeInfo participant: MeshClient.participants)
         {
-            System.out.println("Checking " + newName + " against " + participant.name);
-            System.out.println("Checking " + newIP + " against " + participant.peerIP);
-            System.out.println("Checking " + newPort + " against " + participant.peerPort);
 
             // compare against each variable
             // NOTE: not checking against IP because, for the sake of the

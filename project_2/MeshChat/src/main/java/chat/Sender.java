@@ -51,7 +51,7 @@ public class Sender extends Thread {
         // run the client's sender
         while(MeshClient.running)
         {
-
+            // wait for user input
             userInput = scanner.nextLine();
             
             // ensure the message begins as a null object to avoid previous
@@ -81,8 +81,7 @@ public class Sender extends Thread {
                         newMessage = new Message(LEAVE, nodeInfo);
                         isJoined = false;
                         
-                        // clear this client's participants list
-                        MeshClient.participants = new ArrayList<>();
+                        // need to send the LEAVE message to all peers
                     }
                     else
                     {
@@ -131,7 +130,6 @@ public class Sender extends Thread {
                     // the IP/port of one other peer
                     // NOTE: in essence, this will only be used to JOIN before
                     //       the application is "warmed up"
-
                     if(MeshClient.participants.size() == 1)
                     {
                         // get the IP and port of the Peer that we're assuming
@@ -139,7 +137,6 @@ public class Sender extends Thread {
                         Properties prop = getServerInfo("config/peer.properties");
                         peerIP = prop.getProperty("PEER_KNOWN_IP");       
                         peerPort = Integer.parseInt(prop.getProperty("PEER_KNOWN_PORT"));
-
                         new SenderWorker(new Socket(peerIP, peerPort),
                                                     newMessage).start();
                     }
@@ -155,6 +152,20 @@ public class Sender extends Thread {
                             new SenderWorker(new Socket(participant.peerIP,
                                                  participant.peerPort),
                                              newMessage).start();
+                        }
+                        
+                        // check if the message was a LEAVE after sending it
+                        // to all the existing peers
+                        if(newMessage.getType() == LEAVE)
+                        {
+                            // if the user sent a LEAVE, clear their list
+                            
+                            // clear this peer's participants list
+                            MeshClient.participants = new ArrayList<>();
+
+                            // add self back to participants list
+                            MeshClient.participants.add(MeshClient.nodeInfo);
+
                         }
                     }
                 }

@@ -70,11 +70,6 @@ public class MeshClient implements Runnable {
     }
 
     public static void main(String[] args) throws IOException {
-        
-        // declare variables
-        Boolean invalidSetup = true;
-        String knownPeerInput;
-        int clientPort = -1;
 
         // get IP of the current machine
         String clientIP = getMyIP();
@@ -82,50 +77,10 @@ public class MeshClient implements Runnable {
         // ask the user for their name
         System.out.println("Hello! What is your name?");
         String name = scanner.nextLine();
-
-        // ask the user if they want to act as the client that has the port/IP
-        // that the others "just know"
-        System.out.println("Which client do you want to be?\n"
-                + "1. The one that is \'known\'!\n"
-                + "2. The second one!\n"
-                + "3. The third one!");
         
-        while(invalidSetup)
-        {
-            knownPeerInput = scanner.nextLine();
-            
-            if(knownPeerInput.equals("1"))
-            {
-                // if the client wants to act as the peer everyone knows, they
-                // use localhost as the IP and Dr. Otte's birthday as a port
-                clientPort = 23657;
-                
-                // break out of the loop
-                invalidSetup = false;
-            }
-            else if(knownPeerInput.equals("2"))
-            {
-                // if the client wants to be the second peer, they use their own
-                // IP and a random port
-                clientPort = 10998;
-                
-                // break out of the loop
-                invalidSetup = false;
-            }
-            else if(knownPeerInput.equals("3"))
-            {
-                // if the client wants to be the third peer, they use their own
-                // IP and a random port
-                clientPort = 20998;
-                
-                // break out of the loop
-                invalidSetup = false;
-            }
-            else
-            {
-                System.out.println("Please type either \'1\', \'2\', or \'3\'!");
-            }
-        }
+        System.out.println("What port number do you want to listen on?");
+        int clientPort = Integer.parseInt(scanner.nextLine());
+        
                 
         // create client thread
         new MeshClient(clientIP, name, clientPort).run();
