@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import message.Message;
@@ -80,25 +81,31 @@ public class ReceiverWorker extends Thread {
                     
                     // cast content to NodeInfo
                     messageNodeInfo = (NodeInfo) messageContent;
-                    
-                    // find the leaving participant in the list based on their
-                    // name
-                    for(NodeInfo participant: MeshClient.participants)
+                        
+                    // find the leaving participant in the list based on
+                    // their name
+                    // NOTE: using iterator due to ArrayList limitations
+                    for(Iterator<NodeInfo> iterator = MeshClient.participants.iterator(); iterator.hasNext(); )
                     {
-                        // check for equivalence between the current iteration
-                        // of the participants list and the received message
-                        if(participant.name.equals(messageNodeInfo.name))
+                        String name = iterator.next().name;
+                        if(name.equals(messageNodeInfo.name))
                         {
-                            // remove them
-                            MeshClient.participants.remove(participant);
+                            iterator.remove();
                         }
                     }
                     break;
                 case SHUTDOWN:
-                    // a peer is shutting down, shut down as well
-                    System.out.println("Got a SHUTDOWN! Goodbye!");
-                    MeshClient.running = false;
-                    break;
+                    // a peer is shutting down, shut down self
+                    
+                    // get the nodeinfo from the message
+                    messageNodeInfo = (NodeInfo) messageContent;
+                    
+                    // display to the user who sent the SHUTDOWN request
+                    System.out.println(messageNodeInfo.name + " sent a SHUTDOWN "
+                            + "request! Goodbye!");
+                    
+                    // exit the system
+                    System.exit(0);
                 case SEND_LIST:
                     // a peer sent a list of participants, take it
                     messageList = (ArrayList<NodeInfo>) messageContent;
@@ -110,10 +117,6 @@ public class ReceiverWorker extends Thread {
                     break;
             }
 
-            for(NodeInfo participant: MeshClient.participants)
-            {
-                System.out.println(participant.name);
-            }
             // close the connection
             peerConnection.close();
             

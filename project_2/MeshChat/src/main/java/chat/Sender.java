@@ -51,6 +51,7 @@ public class Sender extends Thread {
         // run the client's sender
         while(MeshClient.running)
         {
+
             userInput = scanner.nextLine();
             
             // ensure the message begins as a null object to avoid previous
@@ -130,6 +131,7 @@ public class Sender extends Thread {
                     // the IP/port of one other peer
                     // NOTE: in essence, this will only be used to JOIN before
                     //       the application is "warmed up"
+
                     if(MeshClient.participants.isEmpty())
                     {
                         // get the IP and port of the Peer that we're assuming
@@ -137,7 +139,7 @@ public class Sender extends Thread {
                         Properties prop = getServerInfo("config/peer.properties");
                         peerIP = prop.getProperty("PEER_KNOWN_IP");       
                         peerPort = Integer.parseInt(prop.getProperty("PEER_KNOWN_PORT"));
-                        
+
                         new SenderWorker(new Socket(peerIP, peerPort),
                                                     newMessage).start();
                     }
@@ -145,23 +147,25 @@ public class Sender extends Thread {
                     {
                         // otherwise, we need to send the message to all
                         // participating peers
-                        
-                        // loop through each participant in the list and create
-                        // a new thread
+
+                        // loop through each participant in the list and 
+                        // create a new thread
+                        System.out.println("Sending a " + newMessage.getType() + " message");
                         for (NodeInfo participant: MeshClient.participants)
                         {
                             new SenderWorker(new Socket(participant.peerIP,
                                                  participant.peerPort),
                                              newMessage).start();
-                        }                    
+                        }
                     }
-                    
                 }
-            } catch (IOException ex) {
+            } 
+            catch (IOException ex)
+            {
                 Logger.getLogger(Sender.class.getName()).log(Level.SEVERE, 
                         null, ex);
             }
-            
+
         }
         
     }

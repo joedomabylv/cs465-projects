@@ -7,28 +7,20 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Queue;
 import java.util.Scanner;
-import java.util.concurrent.PriorityBlockingQueue;
-import message.Message;
 
 /**
  *
  * @author Joe Domabyl V, Daniel Rydberg, Nick Nannen
  */
 public class MeshClient implements Runnable {
-
-    static void add(Object messageContent) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
     
     // declare variables
     NodeInfo nodeInfo;
     private static final Scanner scanner = new Scanner(System.in);
     public static Boolean running = true;
     public static ArrayList<NodeInfo> participants = new ArrayList<>();
-    public static Queue<Message> messageQueue = new PriorityBlockingQueue<>();
-    public static Boolean participantLock = false;
+    public static Boolean handlingParticipants = false;
     
     // constructor
     public MeshClient(String clientIP, String name, int clientPort) {
@@ -90,14 +82,16 @@ public class MeshClient implements Runnable {
 
         // ask the user if they want to act as the client that has the port/IP
         // that the others "just know"
-        System.out.println("Do you want this client to act as the peer "
-                + "that everyone else already knows? (y/n)");
+        System.out.println("Which client do you want to be?\n"
+                + "1. The one that is \'known\'!\n"
+                + "2. The second one!\n"
+                + "3. The third one!");
         
         while(invalidSetup)
         {
             knownPeerInput = scanner.nextLine();
             
-            if(knownPeerInput.equals("y"))
+            if(knownPeerInput.equals("1"))
             {
                 // if the client wants to act as the peer everyone knows, they
                 // use localhost as the IP and Dr. Otte's birthday as a port
@@ -107,12 +101,21 @@ public class MeshClient implements Runnable {
                 // break out of the loop
                 invalidSetup = false;
             }
-            else if(knownPeerInput.equals("n"))
+            else if(knownPeerInput.equals("2"))
             {
-                // if the client doesn't want to act as the peer everyone knows,
-                // they use the IP of the current machine and their own port.
-                // NOTE: if on using multiple machines, change the port number
+                // if the client wants to be the second peer, they use the IP
+                // of the current machine and their own port
                 clientPort = 20998;
+                
+                // break out of the loop
+                invalidSetup = false;
+            }
+            else if(knownPeerInput.equals("3"))
+            {
+                // if the client wants to be the third peer, they use a random
+                // IP and a random port
+                clientIP = "248.235.64.79";
+                clientPort = 10998;
                 
                 // break out of the loop
                 invalidSetup = false;
