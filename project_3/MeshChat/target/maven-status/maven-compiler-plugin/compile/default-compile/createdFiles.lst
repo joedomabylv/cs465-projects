@@ -1,0 +1,8 @@
+chat\Receiver.class
+utils\PropHandler.class
+message\Message.class
+message\MessageType.class
+chat\ReceiverWorker.class
+chat\Sender.class
+chat\NodeInfo.class
+chat\MeshClient.class
