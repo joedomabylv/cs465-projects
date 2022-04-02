@@ -53,10 +53,11 @@ public class TransactionServer {
         while(true)
         {
             // listen for a transaction from the client
-            Socket transactionClient = server.accept();
+            Socket client = server.accept();
             
             // inform the transaction manager that a transaction is about
             // to occur
+            transactionManager.runTransaction(client);
         }
     }
     

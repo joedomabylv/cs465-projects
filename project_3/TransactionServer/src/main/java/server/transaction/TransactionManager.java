@@ -10,6 +10,7 @@ import java.util.ArrayList;
 public class TransactionManager {
     
     ArrayList<Transaction> abortedTransactions;
+    ArrayList<Transaction> activeTransactions;
     
     /**
      * Construct a TransactionManager
@@ -17,6 +18,7 @@ public class TransactionManager {
     public TransactionManager()
     {
         this.abortedTransactions = new ArrayList<>();
+        this.activeTransactions = new ArrayList<>();
         System.out.println("[+] TransactionManager created");
     }
     
@@ -42,7 +44,7 @@ public class TransactionManager {
      * Handle a transaction from a given client connection
      * @param transactionClient 
      */
-    public void handleTransaction(Socket transactionClient)
+    public void runTransaction(Socket transactionClient)
     {
         new TransactionManagerWorker(transactionClient).start();
     }

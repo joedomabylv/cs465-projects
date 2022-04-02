@@ -11,6 +11,9 @@ public class Transaction {
     int transactionID;
     int lastCommittedTransaction;
     String log;
+    
+    // is the read set the account ID's of the two accounts involved in a
+    // transaction???????? but then why does Otte have it as an array list
     ArrayList<Integer> readSet;
     int writeSet;
     
