@@ -8,7 +8,7 @@ import java.util.ArrayList;
  */
 public class AccountManager {
     
-    ArrayList<Account> accounts;
+    public static ArrayList<Account> accounts;
     
     /**
      * Constructor
@@ -18,12 +18,12 @@ public class AccountManager {
     public AccountManager(int numberAccounts, int initialBalance)
     {
         // initialize accounts list
-        this.accounts = new ArrayList();
+        AccountManager.accounts = new ArrayList();
         
         // create accounts
         for(int index = 0; index < numberAccounts; index++)
         {
-            this.accounts.add(createAccount(index, initialBalance));
+            AccountManager.accounts.add(createAccount(index, initialBalance));
         }
         System.out.println("[+] AccountManager created");
     }
@@ -40,11 +40,21 @@ public class AccountManager {
     }
     
     /**
+     * Get the total number of accounts in the account list
+     * @return account number/list size
+     */
+    public static int getTotalAccountNumber()
+    {
+        System.out.println(AccountManager.accounts);
+        return AccountManager.accounts.size();
+    }
+    
+    /**
      * Read an accounts balance
      * @param accountID
      * @return account balance
      */
-    public int read(int accountID)
+    public static int read(int accountID)
     {
         // get the account object associated with the ID
         Account account = accounts.get(accountID);
@@ -58,7 +68,7 @@ public class AccountManager {
      * @param accountID ID of the account to be written to
      * @param amount new balance for the account
      */
-    public void write(int accountID, int amount)
+    public static void write(int accountID, int amount)
     {
         // get the account object associated with the ID
         Account account = accounts.get(accountID);
@@ -66,5 +76,6 @@ public class AccountManager {
         // set the new account balance
         account.setBalance(amount);
     }
+    
 
 }

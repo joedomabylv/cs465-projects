@@ -26,7 +26,7 @@ public class TransactionServerProxy {
     ObjectOutputStream toServer;
     ObjectInputStream fromServer;
     Message messageToServer;
-    int receivedTransactionID;
+    int transactionID;
     int receivedResult;
     
     /**
@@ -42,6 +42,10 @@ public class TransactionServerProxy {
         
         // create a connection to the server
         serverConnection = new Socket(host, port);
+        
+        // establish IO streams
+        fromServer = new ObjectInputStream(serverConnection.getInputStream());
+        toServer = new ObjectOutputStream(serverConnection.getOutputStream());
     }
     
     /**
@@ -65,9 +69,6 @@ public class TransactionServerProxy {
     public int openTransaction() {
         try
         {   
-            // establish IO streams
-            fromServer = new ObjectInputStream(serverConnection.getInputStream());
-            toServer = new ObjectOutputStream(serverConnection.getOutputStream());
             
             // create a message of type OPEN_TRANSACTION
             // NOTE: probably going to want to send account information as content
@@ -77,14 +78,10 @@ public class TransactionServerProxy {
             toServer.writeObject(messageToServer);
             
             // wait for the server response
-            receivedTransactionID = (int) fromServer.readObject();
-            
-            // close IO streams
-            fromServer.close();
-            toServer.close();
+            this.transactionID = (int) fromServer.readObject();
             
             // send the received transaction ID back to the client
-            return receivedTransactionID;
+            return transactionID;
             
         } catch (IOException | ClassNotFoundException ex)
         {
@@ -105,10 +102,6 @@ public class TransactionServerProxy {
     {
         try
         {
-            // establish IO streams
-            fromServer = new ObjectInputStream(serverConnection.getInputStream());
-            toServer = new ObjectOutputStream(serverConnection.getOutputStream());
-            
             // create a message of type CLOSE_TRANSACTION
             messageToServer = new Message(CLOSE_TRANSACTION, null);
             
@@ -118,10 +111,10 @@ public class TransactionServerProxy {
             // wait for the server response
             receivedResult = (int) fromServer.readObject();
             
-            // close IO streams
+            serverConnection.close();
             fromServer.close();
             toServer.close();
-            
+
             // send the received transaction ID back to the client
             return receivedResult;    
         } catch (IOException | ClassNotFoundException ex)
@@ -135,30 +128,26 @@ public class TransactionServerProxy {
     
     /**
      * Create a message of type READ_REQUEST and send it to the server
-     * @param transactionID
+     * @param accountID
+     * @return account balance
      */
-    public int read(int transactionID)
+    public int read(int accountID)
     {
         
         int readResult;
         
         try
         {
-            // establish IO streams
-            fromServer = new ObjectInputStream(serverConnection.getInputStream());
-            toServer = new ObjectOutputStream(serverConnection.getOutputStream());
             
             // create a message of type READ_REQUEST
-            messageToServer = new Message(READ_REQUEST, transactionID);
+            messageToServer = new Message(READ_REQUEST, accountID);
             
             // send the message to the server
             toServer.writeObject(messageToServer);
+            System.out.println("[*] Transaction #" + this.transactionID + " [TransactionServerProxy] READ_REQUEST >>> account #" + accountID);
             
             readResult = (int) fromServer.readObject();
-            
-            // close IO streams
-            fromServer.close();
-            toServer.close();
+            System.out.println("[*] Transaction #" + this.transactionID + " [TransactionServerProxy] READ_REQUEST <<< account #" + accountID + ", balance $" + readResult);
             
             // return the result to the client
             return readResult;
@@ -174,27 +163,23 @@ public class TransactionServerProxy {
     
     /**
      * Create a message of type WRITE_REQUEST and send it to the server
-     * @param transactionID
+     * @param accountID
+     * @param amount
      */
-    public void write(int transactionID)
+    public void write(int accountID, int amount)
     {
         try
-        {
-            // establish IO streams
-            fromServer = new ObjectInputStream(serverConnection.getInputStream());
-            toServer = new ObjectOutputStream(serverConnection.getOutputStream());
+        {  
+            int[] messageContent = {accountID, amount};
             
             // create a message of type WRITE_REQUEST
-            messageToServer = new Message(WRITE_REQUEST, transactionID);
+            messageToServer = new Message(WRITE_REQUEST, messageContent);
             
             // send the message to the server
             toServer.writeObject(messageToServer);
             
             // maybe should have the server ping back a successful reception?
-            
-            // close IO streams
-            fromServer.close();
-            toServer.close();
+
             
         } catch (IOException ex)
         {

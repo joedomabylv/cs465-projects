@@ -19,8 +19,8 @@ public class TransactionServer {
     int serverPort;
     int numberAccounts;
     int initialBalance;
-    TransactionManager transactionManager = null;
-    AccountManager accountManager = null;
+    public static TransactionManager transactionManager = null;
+    public static AccountManager accountManager = null;
     private ServerSocket server = null;
     
     /**

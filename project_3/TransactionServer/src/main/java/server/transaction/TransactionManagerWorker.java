@@ -6,8 +6,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import server.account.AccountManager;
+import static server.transaction.TransactionServer.transactionManager;
 
 /**
  *
@@ -21,48 +24,72 @@ public class TransactionManagerWorker extends Thread {
     Message messageReceived = null;
     int messageType;
     Transaction transaction;
-    int transactionID;
+    int accountID;
+    int accountBalance;
+    int transactionNumber;
+    int mostRecentCommittedTransactionID;
+    int[] writeContent;
+    int amount;
     
-    public TransactionManagerWorker(Socket client) {
+    public TransactionManagerWorker(Socket client, int transactionNumber) throws SocketException {
         this.client = client;
+        this.transactionNumber = transactionNumber;
+        
+        // try to open IO streams
+        try
+        {
+            // establish IO streams
+            toClient = new ObjectOutputStream(client.getOutputStream());
+            fromClient = new ObjectInputStream(client.getInputStream());
+        } catch (IOException ex)
+        {
+            Logger.getLogger(TransactionManagerWorker.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     @Override
     public void run() {
-        // create a new transaction
-        System.out.println("[!] TransactionManagerWorker called");
+        
+        Boolean transactionOpen = true;
         
         try {
-            // establish IO streams
-            toClient = new ObjectOutputStream(client.getOutputStream());
-            fromClient = new ObjectInputStream(client.getInputStream());
-            
-            // read the sent object
-            messageReceived = (Message) fromClient.readObject();
-        
-            // determine the type of the object
-            messageType = messageReceived.getMessageType();
-            
             // start the loop such that the worker remains listening until
             // the transaction is to be closed
-            while(messageType != CLOSE_TRANSACTION)
+            while(transactionOpen)
             {
+
+                // read the sent object
+                messageReceived = (Message) fromClient.readObject();
+
+                // determine the type of the object
+                messageType = messageReceived.getMessageType();
+            
                 switch(messageType) {
                     case OPEN_TRANSACTION ->
                     {
-                        System.out.println("[!] TransactionManagerWorker received a message of type OPEN_TRANSACTION");
-                        // create a transaction object
+                        synchronized (transactionManager.activeTransactions)
+                        {
+                            // get the ID of the last comitted transaction,
+                            // necessary for creating a new transaction object
+                            mostRecentCommittedTransactionID = transactionManager.getMostRecentComittedTransactionID();
 
-                        // give the transaction object a new ID and the ID of the
-                        // most recently committed transaction
+                            // create a transaction object and give the transaction
+                            // object a new ID and the ID of the most recently
+                            // committed transaction
+                            transaction = new Transaction(transactionNumber,
+                                    mostRecentCommittedTransactionID);
 
-                        // store it in the active transactions list
+
+                            // store it in the active transactions list
+                            transactionManager.addActiveTransaction(transaction);
+                        }
+                        System.out.println("[*] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] OPEN_TRANSACTION " + transaction.getTransactionID());
 
                         // send the transaction ID back to the proxy
+                        toClient.writeObject(transaction.getTransactionID());
                     }
                     case CLOSE_TRANSACTION ->
                     {
-                        System.out.println("[!] TransactionManagerWorker received a message of type CLOSE_TRANSACTION");
                         // VALIDATE HERE, I DONT KNOW HOW
                         
                         // if success, we can commit: writeTransaction()
@@ -74,38 +101,38 @@ public class TransactionManagerWorker extends Thread {
                         // send the result back to the client
                         
                         // close the connection
+                        toClient.close();
+                        fromClient.close();
+                        client.close();
+                        transactionOpen = false;
                     }
                     case READ_REQUEST ->
                     {
-                        System.out.println("[!] TransactionManagerWorker received a message of type READ_REQUEST");
                         // get the transaction ID from the message
-                        transactionID = (int) messageReceived.getContent();
+                        accountID = (int) messageReceived.getContent();
                         
-                        // get the account numbers associated with the transaction
-                        
-                        // call read on the transaction object
+                        // get the account balance from the given account ID
+                        accountBalance = AccountManager.read(accountID);
                         
                         // send the result back to the proxy
+                        toClient.writeObject(accountBalance);
                     }
                     case WRITE_REQUEST ->
                     {
-                        System.out.println("[!] TransactionManagerWorker received a message of type WRITE_REQUEST");
                         // get the transaction ID from the message
-                        transactionID = (int) messageReceived.getContent();
+                        writeContent = (int[]) messageReceived.getContent();
                         
-                        // get the account numbers associated with the transaction
+                        accountID = writeContent[0];
+                        amount = writeContent[1];
                         
-                        // call write on the transaction object
+                        // write the given balance to the account
+                        AccountManager.write(accountID, amount);
+                        System.out.println("[*] Transaction #" + this.transaction.getTransactionID() + " [TransactionManagerWorker.run] WRITE_REQUEST >>> account #" + accountID + ", new balance $" + amount);
                         
-                        // send the result back to the proxy
+                        // send the result back to the proxy?
                     }
                 }
                 
-                // wait for the next message
-                messageReceived = (Message) fromClient.readObject();
-
-                // determine the type of the message
-                messageType = messageReceived.getMessageType();
             }
         
         } 
