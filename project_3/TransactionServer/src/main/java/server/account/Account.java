@@ -21,30 +21,30 @@ public class Account {
     }
     
     /**
-     * Get the account balance
-     * @return account balance
-     */
-    public int getBalance()
-    {
-        return this.balance;
-    }
-    
-    /**
-     * Set a new account balance
-     * @param newBalance new account balance
-     */
-    public void setBalance(int newBalance)
-    {
-        this.balance = newBalance;
-    }
-    
-    /**
      * Get the account ID of this account
      * @return account ID
      */
     public int getAccountID()
     {
         return this.accountID;
+    }
+    
+    /**
+     * Read the balance from this account
+     * @return account balance
+     */
+    public int read()
+    {
+        return this.balance;
+    }
+    
+    /**
+     * Write a given amount to this accounts balance
+     * @param amount new account balance
+     */
+    public void write(int amount)
+    {
+        this.balance = amount;
     }
     
 }

@@ -12,5 +12,7 @@ public interface MessageTypes {
     static final int WRITE_REQUEST = 4;
     static final int TRANSACTION_COMMITTED = 5;
     static final int TRANSACTION_ABORTED = 6;
+    static final int WRITESET_SUCCESS = 7;
+    static final int WRITESET_FAIL = 8;
     
 }

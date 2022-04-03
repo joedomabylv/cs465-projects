@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import server.account.AccountManager;
 import static server.transaction.TransactionServer.transactionManager;
 
 /**
@@ -26,20 +25,20 @@ public class TransactionManagerWorker extends Thread {
     Transaction transaction;
     int accountID;
     int accountBalance;
-    int transactionNumber;
-    int mostRecentCommittedTransactionID;
+    int transactionID;
+    int mostRecentCommittedTransactionNumber;
     int[] writeContent;
     int amount;
     int transactionResult;
+    int writeSetResult;
     
-    public TransactionManagerWorker(Socket client, int transactionNumber) throws SocketException {
+    public TransactionManagerWorker(Socket client, int transactionID) throws SocketException {
         this.client = client;
-        this.transactionNumber = transactionNumber;
+        this.transactionID = transactionID;
         
         // try to open IO streams
         try
         {
-            // establish IO streams
             toClient = new ObjectOutputStream(client.getOutputStream());
             fromClient = new ObjectInputStream(client.getInputStream());
         } catch (IOException ex)
@@ -66,19 +65,21 @@ public class TransactionManagerWorker extends Thread {
                 messageType = messageReceived.getMessageType();
             
                 switch(messageType) {
+                    // OPEN_TRANSACTION request received
                     case OPEN_TRANSACTION ->
                     {
+                        // ensure synchronization of activeTransactions list
                         synchronized (transactionManager.activeTransactions)
-                        {
+                        {   
                             // get the ID of the last comitted transaction,
                             // necessary for creating a new transaction object
-                            mostRecentCommittedTransactionID = transactionManager.getMostRecentComittedTransactionID();
+                            mostRecentCommittedTransactionNumber = transactionManager.getMostRecentComittedTransactionNumber();
 
                             // create a transaction object and give the transaction
-                            // object a new ID and the ID of the most recently
+                            // object a new ID and the number of the most recently
                             // committed transaction
-                            transaction = new Transaction(transactionNumber,
-                                    mostRecentCommittedTransactionID);
+                            transaction = new Transaction(transactionID,
+                                    mostRecentCommittedTransactionNumber);
 
 
                             // store it in the active transactions list
@@ -91,20 +92,38 @@ public class TransactionManagerWorker extends Thread {
                     }
                     case CLOSE_TRANSACTION ->
                     {
-                        // VALIDATE HERE, I DONT KNOW HOW
+                        synchronized (transactionManager.activeTransactions)
+                        {
+                            
+                            transactionManager.activeTransactions.remove(transaction);
+                            
+                            // validate transaction
+                            if(transactionManager.validateTransaction(transaction))
+                            {
+                                // validation successful, update transaction list
+                                transactionManager.addCommittedTransaction(transaction);
+                                
+                                // validation successful, commence update phase
+                                transactionManager.updateTransaction(transaction);
+                                
+                                // return committed transaction result to client
+                                toClient.writeObject(TRANSACTION_COMMITTED);
+                            }
+                            else
+                            {
+                                // transaction failed validation, abort it
+                                transactionManager.addAbortedTransaction(transaction);
+                                toClient.write(TRANSACTION_ABORTED);
+                            }
+
+                        }
                         
-                        // if success, we can commit: writeTransaction()
-                        // NOTE: not sure if a commit constitutes a writeTransaction call,
-                        // that's just what is says in his notes
-                        
-                        // remove the transaction from active transactions list
-                        
-                        // send the result back to the client
-                        
-                        // close the connection
+                        // regardless of validation result, close the connection
                         toClient.close();
                         fromClient.close();
                         client.close();
+                        
+                        // end worker loop
                         transactionOpen = false;
                     }
                     case READ_REQUEST ->
@@ -115,7 +134,7 @@ public class TransactionManagerWorker extends Thread {
 
                         
                         // get the account balance from the given account ID
-                        accountBalance = AccountManager.read(accountID);
+                        accountBalance = transaction.read(accountID);
                         System.out.println("[*] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] READ_REQUEST <<< account #" + accountID + ", balance $" + accountBalance);
 
                         // send the result back to the proxy
@@ -123,17 +142,18 @@ public class TransactionManagerWorker extends Thread {
                     }
                     case WRITE_REQUEST ->
                     {
-                        // get the transaction ID from the message
+                        // get the account ID and the amount from the message
                         writeContent = (int[]) messageReceived.getContent();
                         
                         accountID = writeContent[0];
                         amount = writeContent[1];
                         
                         // write the given balance to the account
-                        AccountManager.write(accountID, amount);
+                        writeSetResult = transaction.write(accountID, amount);
                         System.out.println("[*] Transaction #" + this.transaction.getTransactionID() + " [TransactionManagerWorker.run] WRITE_REQUEST >>> account #" + accountID + ", new balance $" + amount);
                         
-                        // send the result back to the proxy?
+                        // send the result back to the proxy
+                        toClient.writeObject(writeSetResult);
                     }
                 }
                 

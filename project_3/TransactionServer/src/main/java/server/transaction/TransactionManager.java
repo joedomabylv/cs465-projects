@@ -3,6 +3,7 @@ package server.transaction;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Transaction Manager
@@ -10,20 +11,26 @@ import java.util.ArrayList;
  */
 public class TransactionManager {
     
-    public static ArrayList<Transaction> abortedTransactions;
-    public static ArrayList<Transaction> activeTransactions;
-    public static ArrayList<Transaction> committedTransactions;
-    // create numbers for transactions, acting as transaction ID's
-    int transactionNumber = 0;
+    public ArrayList<Transaction> abortedTransactions;
+    public ArrayList<Transaction> activeTransactions;
+    public ArrayList<Transaction> committedTransactions;
+    int transactionNumber;
+    
+    // create ID for transactions
+    int transactionID = 0;
     
     /**
      * Construct a TransactionManager
      */
     public TransactionManager()
     {
-        TransactionManager.abortedTransactions = new ArrayList<>();
-        TransactionManager.activeTransactions = new ArrayList<>();
-        TransactionManager.committedTransactions = new ArrayList<>();
+        this.abortedTransactions = new ArrayList<>();
+        this.activeTransactions = new ArrayList<>();
+        this.committedTransactions = new ArrayList<>();
+        
+        // initialize transaction number to 0
+        transactionNumber = 0;
+        
         System.out.println("[+] TransactionManager created");
     }
     
@@ -31,62 +38,62 @@ public class TransactionManager {
      * Add a given aborted transaction to the transaction list
      * @param abortedTransaction aborted transaction
      */
-    static void addAbortedTransaction(Transaction abortedTransaction)
+    public void addAbortedTransaction(Transaction abortedTransaction)
     {
-        TransactionManager.abortedTransactions.add(abortedTransaction);
+        this.abortedTransactions.add(abortedTransaction);
     }
     
     /**
      * Get a list of all aborted transactions.
      * @return a list of all aborted transactions
      */
-    public static ArrayList<Transaction> getAbortedTransactions()
+    public ArrayList<Transaction> getAbortedTransactions()
     {
-        return TransactionManager.abortedTransactions;
+        return this.abortedTransactions;
     }
     
     /**
      * Add a given active transaction to the transaction list
      * @param abortedTransaction active transaction
      */
-    void addActiveTransaction(Transaction abortedTransaction)
+    public void addActiveTransaction(Transaction abortedTransaction)
     {
-        TransactionManager.activeTransactions.add(abortedTransaction);
+        this.activeTransactions.add(abortedTransaction);
     }
     
     /**
      * Get a list of all active transactions.
      * @return a list of all active transactions
      */
-    public static ArrayList<Transaction> getActiveTransactions()
+    public ArrayList<Transaction> getActiveTransactions()
     {
-        return TransactionManager.activeTransactions;
+        return this.activeTransactions;
     }
     
     /**
      * Add a given committed transaction to the transaction list
      * @param committedTransaction 
      */
-    void addCommittedTransaction(Transaction committedTransaction)
+    public void addCommittedTransaction(Transaction committedTransaction)
     {
-        TransactionManager.committedTransactions.add(committedTransaction);
+        this.committedTransactions.add(committedTransaction);
     }
     
     /**
-     * Get the ID of the most recently committed transaction
+     * Get the number of the most recently committed transaction
      * 
      * The most recently committed transaction is the last element in the
      * committedTransactions list
-     * @return ID of most recently committed transaction, 0 if the list is
-     * empty
+     * @return number of most recently committed transaction, -1 if the list is
+     * empty/null
      */
-    public int getMostRecentComittedTransactionID()
+    public int getMostRecentComittedTransactionNumber()
     {
         // check if the committedTransactions list is empty
         if( (!committedTransactions.isEmpty()) && (committedTransactions != null))
         {
-            // not empty, return the last transaction in the list
-            return committedTransactions.get(committedTransactions.size() - 1).getTransactionID();
+            // not empty, return the last transaction number in the list
+            return committedTransactions.get(committedTransactions.size() - 1).getTransactionNumber();
         }
         return 0;
     }
@@ -98,8 +105,83 @@ public class TransactionManager {
      */
     public void runTransaction(Socket transactionClient) throws SocketException {
         // create a new transaction manager worker
-        new TransactionManagerWorker(transactionClient, transactionNumber).start();
-        // increment the transaction number
-        transactionNumber += 1;
+        new TransactionManagerWorker(transactionClient, transactionID).start();
+        // increment the transaction ID
+        transactionID += 1;
+    }
+    
+    /**
+     * Validate a transaction
+     * @param transaction
+     * @return success/failure of validation
+     */
+    public Boolean validateTransaction(Transaction transaction)
+    {
+        // declare variables
+        HashMap<Integer, Integer> overlapWriteSet;
+        int firstReadAccountID;
+        int secondReadAccountID;
+        
+        // assign transaction number to transaction
+        transaction.setTransactionNumber(this.transactionNumber);
+        System.out.println("Assigning transactionNumber " + this.transactionNumber + " to Transaction #" + transaction.getTransactionID());
+        // increment transaction number
+        this.transactionNumber++;
+        
+        // get the readset of the current transaction
+        ArrayList<Integer> currentReadSet = transaction.getReadSet();
+        firstReadAccountID = currentReadSet.get(0);
+        secondReadAccountID = currentReadSet.get(1);
+        
+        ArrayList<Transaction> overlappingTransactions = getOverlappingTransactions(transaction);
+        
+        // validate read-write conflicts
+        for (Transaction overlappingTransaction: overlappingTransactions)
+        {
+            overlapWriteSet = overlappingTransaction.getWriteSet();
+            
+            for(Integer accountID: overlapWriteSet.keySet())
+            {
+                if(accountID == firstReadAccountID || accountID == secondReadAccountID)
+                {
+                    // an overlapping transaction wrote to an account the current
+                    // transaction has read from, CONFLICT, return failed validation
+                    return false;
+                }
+            }
+        }
+        
+        // no conflict, validation is a success
+        return true;
+    }
+    
+    /**
+     * Get all overlapping transactions based on a given transaction
+     * @param transaction
+     * @return ArrayList of all overlapping transactions
+     */
+    public ArrayList<Transaction> getOverlappingTransactions(Transaction transaction)
+    {
+        ArrayList<Transaction> overlappingTransactions = new ArrayList<>();
+                
+        if(!committedTransactions.isEmpty())
+        {
+            // generate a list of overlapping transactions
+            for(int index = transaction.getLastCommittedTransactionNumber() + 1; index < transaction.getTransactionNumber(); index++)
+            {
+                overlappingTransactions.add(committedTransactions.get(index));
+            }
+        }
+        
+        return overlappingTransactions;
+    }
+    
+    /**
+     * Update a transaction by committing tentative data to operational data
+     * @param transaction
+     */
+    public void updateTransaction(Transaction transaction)
+    {
+        transaction.update();
     }
 }

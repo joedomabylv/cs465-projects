@@ -56,11 +56,8 @@ public class AccountManager {
      */
     public static int read(int accountID)
     {
-        // get the account object associated with the ID
-        Account account = accounts.get(accountID);
-
         // return the balance of the account
-        return account.getBalance();
+        return accounts.get(accountID).read();
     }
     
     /**
@@ -74,7 +71,7 @@ public class AccountManager {
         Account account = accounts.get(accountID);
         
         // set the new account balance
-        account.setBalance(amount);
+        account.write(amount);
     }
     
 

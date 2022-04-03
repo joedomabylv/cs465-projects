@@ -1,6 +1,9 @@
 package server.transaction;
 
+import static comm.MessageTypes.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import server.account.AccountManager;
 
 /**
  * Transaction
@@ -8,24 +11,30 @@ import java.util.ArrayList;
  */
 public class Transaction {
     
+    int transactionNumber;
     int transactionID;
-    int lastCommittedTransaction;
+    int lastCommittedTransactionNumber;
     String log;
     
-    // is the read set the account ID's of the two accounts involved in a
-    // transaction???????? but then why does Otte have it as an array list
     ArrayList<Integer> readSet;
-    int writeSet;
+    
+    // note: first integer is the account ID, second is the new balance
+    HashMap<Integer, Integer> writeSet;
     
     /**
      * Constructor for a Transaction
-     * @param transactionID
-     * @param lastCommittedTransaction 
+     * @param transactionID ID of the transaction, NOT THE NUMBER
+     * @param lastCommittedTransactionNumber number of the last committed transaction,
+     * NOT THE ID
      */
-    Transaction(int transactionID, int lastCommittedTransaction)
+    Transaction(int transactionID, int lastCommittedTransactionNumber)
     {
         this.transactionID = transactionID;
-        this.lastCommittedTransaction = lastCommittedTransaction;
+        this.lastCommittedTransactionNumber = lastCommittedTransactionNumber;
+        
+        // initialize read and write sets
+        this.readSet = new ArrayList<>();
+        this.writeSet = new HashMap<>();
         this.log = "";
     }
     
@@ -33,13 +42,13 @@ public class Transaction {
      * Get the last committed transaction.
      * @return ID of last committed transaction
      */
-    public int getLastCommittedTransaction()
+    public int getLastCommittedTransactionNumber()
     {
-        return this.lastCommittedTransaction;
+        return this.lastCommittedTransactionNumber;
     }
     
     /**
-     * Get the log.
+     * Get the log
      * @return the log in the form of a String 
      */
     public String getLog()
@@ -48,7 +57,7 @@ public class Transaction {
     }
     
     /**
-     * Get the read set.
+     * Get the read set
      * @return read set in the form of an ArrayList
      */
     public ArrayList<Integer> getReadSet()
@@ -57,7 +66,7 @@ public class Transaction {
     }
     
     /**
-     * Get the transaction ID of this Transaction.
+     * Get the transaction ID of this Transaction
      * @return this transaction ID in the form of an integer
      */
     public int getTransactionID()
@@ -66,10 +75,28 @@ public class Transaction {
     }
     
     /**
-     * Get the write set of this transaction
-     * @return the write set in the form of an integer(?)
+     * Get the transaction number of this Transaction
+     * @return transaction number
      */
-    public int getWriteSet()
+    public int getTransactionNumber()
+    {
+        return this.transactionNumber;
+    }
+    
+    /**
+     * Set the transaction number for this Transaction
+     * @param transactionNumber
+     */
+    public void setTransactionNumber(int transactionNumber)
+    {
+        this.transactionNumber = transactionNumber;
+    }
+    
+    /**
+     * Get the write set of this transaction
+     * @return the write set in the form of an integer
+     */
+    public HashMap getWriteSet()
     {
         return this.writeSet;
     }
@@ -78,37 +105,41 @@ public class Transaction {
      * Log the given string to this Transaction log.
      * @param logString string to be logged
      */
-    private void log(String logString)
+    public void log(String logString)
     {
         this.log += logString;
     }
     
     /**
-     * Read a balance from an account
-     * @param accountNumber account number of account to be read from
+     * Read a balance from an account and update the read set of this transaction
+     * @param accountID account number of account to be read from
      * @return account balance
      */
-    int read(int accountNumber)
+    public int read(int accountID)
     {
-        int balance = 0;
-        // read the balance of an account
+        // read the balance of the account from the account ID
+        int accountBalance = AccountManager.read(accountID);
         
-        // return the balance
-        return balance;
+        // add the account ID to the read set
+        readSet.add(accountID);
+        
+        // return the account balance
+        return accountBalance;
     }
     
     /**
-     * Write the given amount to the given account
-     * @param accountNumber number of the desired account
+     * Update the write set of this transaction
+     * @param accountID number of the desired account
      * @param amount amount to be written
-     * @return Boolean success/failure
+     * @return 
      */
-    Boolean write(int accountNumber, int amount)
+    public int write(int accountID, int amount)
     {
-        // write the given amount to the given account
+        // update the write set of tentative data
+        this.writeSet.put(accountID, amount);
         
-        // return success/failure
-        return null;
+        // always return success
+        return WRITESET_SUCCESS;
     }
     
     /**
@@ -147,5 +178,16 @@ public class Transaction {
         // write result to log?
         
         return null;
+    }
+    
+    /**
+     * Commit the tentative data to operational data of this Transaction
+     */
+    public void update()
+    {
+        for(Integer accountID: writeSet.keySet())
+        {
+            AccountManager.write(accountID, writeSet.get(accountID));
+        }
     }
 }

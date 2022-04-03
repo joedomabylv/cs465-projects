@@ -77,7 +77,8 @@ public class TransactionServerProxy {
             // send the message to the server
             toServer.writeObject(messageToServer);
             
-            // wait for the server response
+            // wait for the server response, the transaction ID of the new
+            // transaction
             this.transactionID = (int) fromServer.readObject();
             
             // send the received transaction ID back to the client
@@ -133,7 +134,8 @@ public class TransactionServerProxy {
     public int read(int accountID)
     {
         
-        int readResult;
+        // initialize the result
+        int readResult = -999;
         
         try
         {
@@ -144,27 +146,29 @@ public class TransactionServerProxy {
             // send the message to the server
             toServer.writeObject(messageToServer);
             
+            // wait for a response, the account balance
             readResult = (int) fromServer.readObject();
-            
-            // return the result to the client
-            return readResult;
             
         } catch (IOException | ClassNotFoundException ex)
         {
             Logger.getLogger(TransactionServerProxy.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        // something went wrong, return result
-        return -999;
+        // return the result, the account balance
+        return readResult;
     }
     
     /**
      * Create a message of type WRITE_REQUEST and send it to the server
      * @param accountID
      * @param amount
+     * @return success/failure of writeset update
      */
-    public void write(int accountID, int amount)
+    public int write(int accountID, int amount)
     {
+        
+        int writeSetResult = WRITESET_FAIL;
+        
         try
         {  
             int[] messageContent = {accountID, amount};
@@ -176,12 +180,15 @@ public class TransactionServerProxy {
             toServer.writeObject(messageToServer);
             
             // maybe should have the server ping back a successful reception?
-
+            writeSetResult = (int) fromServer.readObject();
             
-        } catch (IOException ex)
+        } catch (IOException | ClassNotFoundException ex)
         {
             Logger.getLogger(TransactionServerProxy.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        }
+        
+        // return result
+        return writeSetResult;
     }
     
     /**
