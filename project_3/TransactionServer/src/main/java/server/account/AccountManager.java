@@ -74,5 +74,19 @@ public class AccountManager {
         account.write(amount);
     }
     
+    /**
+     * Get the total amount attached to all accounts in the accounts list
+     * @return branch total
+     */
+    public int getBranchTotal()
+    {
+        int branchTotal = 0;
+        for(Account account: accounts)
+        {
+            branchTotal += account.read();
+        }
+        return branchTotal;
+    }
+    
 
 }

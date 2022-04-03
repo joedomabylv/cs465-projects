@@ -106,6 +106,8 @@ public class TransactionManagerWorker extends Thread {
                                 // validation successful, commence update phase
                                 transactionManager.updateTransaction(transaction);
                                 
+                                System.out.println("[+] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] CLOSE_TRANSACTION #" + transaction.getTransactionID() + " - COMMITTED");
+                                
                                 // return committed transaction result to client
                                 toClient.writeObject(TRANSACTION_COMMITTED);
                             }
@@ -113,7 +115,9 @@ public class TransactionManagerWorker extends Thread {
                             {
                                 // transaction failed validation, abort it
                                 transactionManager.addAbortedTransaction(transaction);
-                                toClient.write(TRANSACTION_ABORTED);
+                                System.out.println("[+] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] CLOSE_TRANSACTION #" + transaction.getTransactionID() + " - ABORTED");
+
+                                toClient.writeObject(TRANSACTION_ABORTED);
                             }
 
                         }
@@ -125,6 +129,13 @@ public class TransactionManagerWorker extends Thread {
                         
                         // end worker loop
                         transactionOpen = false;
+                        
+                        // check if there are any active transactions left
+//                        if(transactionManager.getActiveTransactions().isEmpty())
+//                        {
+//                            TransactionServer.serverRunning = false;
+//                        }
+                       
                     }
                     case READ_REQUEST ->
                     {

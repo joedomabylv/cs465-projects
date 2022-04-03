@@ -80,6 +80,15 @@ public class TransactionManager {
     }
     
     /**
+     * Get a list of all committed transactions
+     * @return committed transactions list
+     */
+    public ArrayList<Transaction> getCommittedTransactions()
+    {
+        return this.committedTransactions;
+    }
+    
+    /**
      * Get the number of the most recently committed transaction
      * 
      * The most recently committed transaction is the last element in the
@@ -95,7 +104,7 @@ public class TransactionManager {
             // not empty, return the last transaction number in the list
             return committedTransactions.get(committedTransactions.size() - 1).getTransactionNumber();
         }
-        return 0;
+        return -1;
     }
     
     /**
@@ -124,7 +133,7 @@ public class TransactionManager {
         
         // assign transaction number to transaction
         transaction.setTransactionNumber(this.transactionNumber);
-        System.out.println("Assigning transactionNumber " + this.transactionNumber + " to Transaction #" + transaction.getTransactionID());
+
         // increment transaction number
         this.transactionNumber++;
         
@@ -133,7 +142,7 @@ public class TransactionManager {
         firstReadAccountID = currentReadSet.get(0);
         secondReadAccountID = currentReadSet.get(1);
         
-        ArrayList<Transaction> overlappingTransactions = getOverlappingTransactions(transaction);
+        ArrayList<Transaction> overlappingTransactions = transaction.getOverlappingTransactions(transaction, committedTransactions);
         
         // validate read-write conflicts
         for (Transaction overlappingTransaction: overlappingTransactions)
@@ -142,38 +151,28 @@ public class TransactionManager {
             
             for(Integer accountID: overlapWriteSet.keySet())
             {
-                if(accountID == firstReadAccountID || accountID == secondReadAccountID)
+                if(accountID == firstReadAccountID)
                 {
                     // an overlapping transaction wrote to an account the current
                     // transaction has read from, CONFLICT, return failed validation
+                    System.out.println("[!] Transaction #" + transaction.getTransactionID() + " [TransactionManager.validateTransaction] Transaction #" + transaction.getTransactionID() + " failed: r/w conflict on account #" + firstReadAccountID + " with Transaction #" + overlappingTransaction.getTransactionID());
+                    this.transactionNumber--;
+                    return false;
+                }
+                else if(accountID == secondReadAccountID)
+                {
+                    // an overlapping transaction wrote to an account the current
+                    // transaction has read from, CONFLICT, return failed validation
+                    System.out.println("[!] Transaction #" + transaction.getTransactionID() + " [TransactionManager.validateTransaction] Transaction #" + transaction.getTransactionID() + " failed: r/w conflict on account #" + secondReadAccountID + " with Transaction #" + overlappingTransaction.getTransactionID());
+                    this.transactionNumber--;
                     return false;
                 }
             }
         }
         
         // no conflict, validation is a success
+        System.out.println("[+] Transaction #" + transaction.getTransactionID() + " [TransactionManager.validateTransaction] Transaction #" + transaction.getTransactionID() + " successfully validated");
         return true;
-    }
-    
-    /**
-     * Get all overlapping transactions based on a given transaction
-     * @param transaction
-     * @return ArrayList of all overlapping transactions
-     */
-    public ArrayList<Transaction> getOverlappingTransactions(Transaction transaction)
-    {
-        ArrayList<Transaction> overlappingTransactions = new ArrayList<>();
-                
-        if(!committedTransactions.isEmpty())
-        {
-            // generate a list of overlapping transactions
-            for(int index = transaction.getLastCommittedTransactionNumber() + 1; index < transaction.getTransactionNumber(); index++)
-            {
-                overlappingTransactions.add(committedTransactions.get(index));
-            }
-        }
-        
-        return overlappingTransactions;
     }
     
     /**

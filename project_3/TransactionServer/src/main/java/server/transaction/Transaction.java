@@ -181,6 +181,28 @@ public class Transaction {
     }
     
     /**
+     * Get all overlapping transactions based on a given transaction
+     * @param transaction
+     * @param committedTransactions
+     * @return ArrayList of all overlapping transactions
+     */
+    public ArrayList<Transaction> getOverlappingTransactions(Transaction transaction, ArrayList<Transaction> committedTransactions)
+    {
+        ArrayList<Transaction> overlappingTransactions = new ArrayList<>();
+                                
+        if(!committedTransactions.isEmpty())
+        {
+            // generate a list of overlapping transactions
+            for(int index = transaction.getLastCommittedTransactionNumber() + 1; index < transaction.getTransactionNumber() - 1; index++)
+            {
+                overlappingTransactions.add(committedTransactions.get(index));
+            }
+        }
+        
+        return overlappingTransactions;
+    }
+    
+    /**
      * Commit the tentative data to operational data of this Transaction
      */
     public void update()

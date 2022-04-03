@@ -22,6 +22,7 @@ public class TransactionServer {
     public static TransactionManager transactionManager = null;
     public static AccountManager accountManager = null;
     private ServerSocket server = null;
+    public static Boolean serverRunning = true;
     
     /**
      * Construct a transaction server listening on the given port
@@ -50,7 +51,7 @@ public class TransactionServer {
     }
     
     public void runServerLoop() throws IOException {
-        while(true)
+        while(serverRunning)
         {
             // listen for a transaction from the client
             Socket client = server.accept();
@@ -59,6 +60,8 @@ public class TransactionServer {
             // to occur
             transactionManager.runTransaction(client);
         }
+        
+        System.out.println("Final branch total: " + accountManager.getBranchTotal());
     }
     
     public static void main(String[] args) throws IOException {
