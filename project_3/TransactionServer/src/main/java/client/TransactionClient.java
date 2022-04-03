@@ -1,5 +1,6 @@
 package client;
 
+import static comm.MessageTypes.*;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -18,13 +19,14 @@ public class TransactionClient {
     {
         
         int transactionID;
-        int transactionResult;
+        int transactionResult = TRANSACTION_ABORTED;
         private TransactionServerProxy transactionServerProxy;
         int firstAccountID;
         int secondAccountID;
         int firstAccountBalance;
         int secondAccountBalance;
         int transferAmount;
+        int previousTransactionID = -1;
         
         // empty contstructor
         public TransactionThread(){};
@@ -32,54 +34,74 @@ public class TransactionClient {
         @Override
         public void run() {
             
-            try
+            while(transactionResult == TRANSACTION_ABORTED)
             {
-                // create a transaction server proxy
-                transactionServerProxy = new TransactionServerProxy();
-                                
-                // choose two random account IDs for a transaction
-                firstAccountID = getRandomNumber(0, 10);
-                secondAccountID = getRandomNumber(0, 10);
-                while(secondAccountID == firstAccountID)
+                try
                 {
-                    secondAccountID = getRandomNumber(0, 10);
-                }
-                
-                // create a random amount to transfer between the accounts
-                // NOTE: maximum size of transaction amount is arbitraily set
-                // to 10
-                transferAmount = getRandomNumber(0, 10);
-                
-                // open the transaction
-                // NOTE: i don't really know if we can access static variables from
-                // different threads in the way i think it works, this might
-                // prove problematic in the future uh oh!
-                transactionID = transactionServerProxy.openTransaction();
-                
-                System.out.println("[*] Transaction #" + transactionID + " started, transfer $" + transferAmount + ": " + firstAccountID + "->" + secondAccountID);
+                    // create a transaction server proxy
+                    transactionServerProxy = new TransactionServerProxy();
 
-                // read/write to/from the accounts attached to the transaction ID
-                // NOTE: not sure if we're supposed to be receiving two
-                // balances back from the single read call? maybe should
-                // determine accounts based on transaction ID then call
-                // read twice
-                // read/write to/from the first account
-                firstAccountBalance = transactionServerProxy.read(firstAccountID);
-                transactionServerProxy.write(firstAccountID, firstAccountBalance - transferAmount);
-                
-                // read/write to/from the second account
-                secondAccountBalance = transactionServerProxy.read(secondAccountID);
-                transactionServerProxy.write(secondAccountID, secondAccountBalance + transferAmount);
-                
-                // close the transaction
-                transactionResult = transactionServerProxy.closeTransaction(transactionID);
-                
-                // if the result states that the transaction was aborted, restart it
-                
-                // otherwise, we're done
-            } catch (IOException ex)
-            {
-                Logger.getLogger(TransactionClient.class.getName()).log(Level.SEVERE, null, ex);
+                    // choose two random account IDs for a transaction
+                    firstAccountID = getRandomNumber(0, 10);
+                    secondAccountID = getRandomNumber(0, 10);
+                    while(secondAccountID == firstAccountID)
+                    {
+                        secondAccountID = getRandomNumber(0, 10);
+                    }
+
+                    // create a random amount to transfer between the accounts
+                    // NOTE: maximum size of transaction amount is arbitraily set
+                    // to 10
+                    transferAmount = getRandomNumber(0, 10);
+
+                    // open the transaction
+                    // NOTE: i don't really know if we can access static variables from
+                    // different threads in the way i think it works, this might
+                    // prove problematic in the future uh oh!
+                    transactionID = transactionServerProxy.openTransaction();
+
+                    if(previousTransactionID == -1)
+                    {
+                        System.out.println("[*] Transaction #" + transactionID + " started, transfer $" + transferAmount + ": " + firstAccountID + "->" + secondAccountID);
+                    }
+                    else
+                    {
+                        System.out.println("[*] Transaction #" + previousTransactionID + " restarted as transaction #" + transactionID + ", transfer $" + transferAmount + ": " + firstAccountID + "->" + secondAccountID);
+                    }
+
+                    // read/write to/from the accounts attached to the transaction ID
+                    // NOTE: not sure if we're supposed to be receiving two
+                    // balances back from the single read call? maybe should
+                    // determine accounts based on transaction ID then call
+                    // read twice
+                    // read/write to/from the first account
+                    firstAccountBalance = transactionServerProxy.read(firstAccountID);
+                    transactionServerProxy.write(firstAccountID, firstAccountBalance - transferAmount);
+
+                    // read/write to/from the second account
+                    secondAccountBalance = transactionServerProxy.read(secondAccountID);
+                    transactionServerProxy.write(secondAccountID, secondAccountBalance + transferAmount);
+
+                    // close the transaction
+                    transactionResult = transactionServerProxy.closeTransaction(transactionID);
+
+                    // if the result states that the transaction was aborted, restart it
+                    switch(transactionResult)
+                    {
+                        case TRANSACTION_COMMITTED ->
+                        {
+                            System.out.println("[+] Transaction #" + transactionID + " COMMITTED!");
+                        }
+                        case TRANSACTION_ABORTED ->
+                        {
+                            System.out.println("\t[-] Transaction #" + transactionID + " ABORTED!");
+                            previousTransactionID = transactionID;
+                        }
+                    }
+                } catch (IOException ex)
+                {
+                    Logger.getLogger(TransactionClient.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
             
         }

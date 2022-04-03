@@ -1,6 +1,7 @@
 package server.transaction;
 
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 
 /**
@@ -93,9 +94,9 @@ public class TransactionManager {
     /**
      * Handle a transaction from a given client connection
      * @param transactionClient 
+     * @throws java.net.SocketException 
      */
-    public void runTransaction(Socket transactionClient)
-    {
+    public void runTransaction(Socket transactionClient) throws SocketException {
         // create a new transaction manager worker
         new TransactionManagerWorker(transactionClient, transactionNumber).start();
         // increment the transaction number

@@ -18,7 +18,6 @@ public class Account {
     {
         this.balance = balance;
         this.accountID = accountID;
-        System.out.println("[+] Account #" + accountID + " created with a balance of $" + balance);
     }
     
     /**

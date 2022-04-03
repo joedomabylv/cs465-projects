@@ -111,9 +111,8 @@ public class TransactionServerProxy {
             // wait for the server response
             receivedResult = (int) fromServer.readObject();
             
-            serverConnection.close();
-            fromServer.close();
-            toServer.close();
+            // close all IO streams and socket
+            this.closeProxy();
 
             // send the received transaction ID back to the client
             return receivedResult;    
@@ -144,10 +143,8 @@ public class TransactionServerProxy {
             
             // send the message to the server
             toServer.writeObject(messageToServer);
-            System.out.println("[*] Transaction #" + this.transactionID + " [TransactionServerProxy] READ_REQUEST >>> account #" + accountID);
             
             readResult = (int) fromServer.readObject();
-            System.out.println("[*] Transaction #" + this.transactionID + " [TransactionServerProxy] READ_REQUEST <<< account #" + accountID + ", balance $" + readResult);
             
             // return the result to the client
             return readResult;
@@ -185,6 +182,22 @@ public class TransactionServerProxy {
         {
             Logger.getLogger(TransactionServerProxy.class.getName()).log(Level.SEVERE, null, ex);
         } 
+    }
+    
+    /**
+     * Close all IO streams and socket
+     */
+    public void closeProxy()
+    {
+        try
+        {
+            fromServer.close();
+            toServer.close();
+            serverConnection.close();
+        } catch (IOException ex)
+        {
+            Logger.getLogger(TransactionServerProxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
 }

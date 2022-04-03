@@ -30,6 +30,7 @@ public class TransactionManagerWorker extends Thread {
     int mostRecentCommittedTransactionID;
     int[] writeContent;
     int amount;
+    int transactionResult;
     
     public TransactionManagerWorker(Socket client, int transactionNumber) throws SocketException {
         this.client = client;
@@ -83,7 +84,7 @@ public class TransactionManagerWorker extends Thread {
                             // store it in the active transactions list
                             transactionManager.addActiveTransaction(transaction);
                         }
-                        System.out.println("[*] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] OPEN_TRANSACTION " + transaction.getTransactionID());
+                        System.out.println("[*] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] OPEN_TRANSACTION #" + transaction.getTransactionID());
 
                         // send the transaction ID back to the proxy
                         toClient.writeObject(transaction.getTransactionID());
@@ -110,10 +111,13 @@ public class TransactionManagerWorker extends Thread {
                     {
                         // get the transaction ID from the message
                         accountID = (int) messageReceived.getContent();
+                        System.out.println("[*] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] READ_REQUEST >>> account #" + accountID);
+
                         
                         // get the account balance from the given account ID
                         accountBalance = AccountManager.read(accountID);
-                        
+                        System.out.println("[*] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] READ_REQUEST <<< account #" + accountID + ", balance $" + accountBalance);
+
                         // send the result back to the proxy
                         toClient.writeObject(accountBalance);
                     }
