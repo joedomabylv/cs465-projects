@@ -15,6 +15,7 @@ public class TransactionManager {
     public ArrayList<Transaction> activeTransactions;
     public ArrayList<Transaction> committedTransactions;
     int transactionNumber;
+    String logString;
     
     // create ID for transactions
     int transactionID = 0;
@@ -31,7 +32,9 @@ public class TransactionManager {
         // initialize transaction number to 0
         transactionNumber = 0;
         
-        System.out.println("[+] TransactionManager created");
+        logString = "[+] TransactionManager created";
+        TransactionServer.updateLogList(logString);
+        System.out.println(logString);
     }
     
     /**
@@ -143,7 +146,7 @@ public class TransactionManager {
         secondReadAccountID = currentReadSet.get(1);
         
         ArrayList<Transaction> overlappingTransactions = transaction.getOverlappingTransactions(transaction, committedTransactions);
-        
+
         // validate read-write conflicts
         for (Transaction overlappingTransaction: overlappingTransactions)
         {
@@ -155,7 +158,9 @@ public class TransactionManager {
                 {
                     // an overlapping transaction wrote to an account the current
                     // transaction has read from, CONFLICT, return failed validation
-                    System.out.println("[!] Transaction #" + transaction.getTransactionID() + " [TransactionManager.validateTransaction] Transaction #" + transaction.getTransactionID() + " failed: r/w conflict on account #" + firstReadAccountID + " with Transaction #" + overlappingTransaction.getTransactionID());
+                    logString = "[!] Transaction #" + transaction.getTransactionID() + " [TransactionManager.validateTransaction] Transaction #" + transaction.getTransactionID() + " failed: r/w conflict on account #" + firstReadAccountID + " with Transaction #" + overlappingTransaction.getTransactionID();
+                    TransactionServer.updateLogList(logString);
+                    System.out.println(logString);
                     this.transactionNumber--;
                     return false;
                 }
@@ -163,7 +168,9 @@ public class TransactionManager {
                 {
                     // an overlapping transaction wrote to an account the current
                     // transaction has read from, CONFLICT, return failed validation
-                    System.out.println("[!] Transaction #" + transaction.getTransactionID() + " [TransactionManager.validateTransaction] Transaction #" + transaction.getTransactionID() + " failed: r/w conflict on account #" + secondReadAccountID + " with Transaction #" + overlappingTransaction.getTransactionID());
+                    logString = "[!] Transaction #" + transaction.getTransactionID() + " [TransactionManager.validateTransaction] Transaction #" + transaction.getTransactionID() + " failed: r/w conflict on account #" + secondReadAccountID + " with Transaction #" + overlappingTransaction.getTransactionID();
+                    TransactionServer.updateLogList(logString);
+                    System.out.println(logString);
                     this.transactionNumber--;
                     return false;
                 }
@@ -171,7 +178,9 @@ public class TransactionManager {
         }
         
         // no conflict, validation is a success
-        System.out.println("[+] Transaction #" + transaction.getTransactionID() + " [TransactionManager.validateTransaction] Transaction #" + transaction.getTransactionID() + " successfully validated");
+        logString = "[+] Transaction #" + transaction.getTransactionID() + " [TransactionManager.validateTransaction] Transaction #" + transaction.getTransactionID() + " successfully validated";
+        TransactionServer.updateLogList(logString);
+        System.out.println(logString);
         return true;
     }
     
@@ -183,4 +192,5 @@ public class TransactionManager {
     {
         transaction.update();
     }
+    
 }

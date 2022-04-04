@@ -1,0 +1,374 @@
+[+] TransactionManager created
+[+] AccountManager created
+[+] ServerSocket created
+[*] Transaction #12 [TransactionManagerWorker.run] OPEN_TRANSACTION #12
+[*] Transaction #16 [TransactionManagerWorker.run] OPEN_TRANSACTION #16
+[*] Transaction #6 [TransactionManagerWorker.run] OPEN_TRANSACTION #6
+[*] Transaction #3 [TransactionManagerWorker.run] OPEN_TRANSACTION #3
+[*] Transaction #8 [TransactionManagerWorker.run] OPEN_TRANSACTION #8
+[*] Transaction #7 [TransactionManagerWorker.run] OPEN_TRANSACTION #7
+[*] Transaction #17 [TransactionManagerWorker.run] OPEN_TRANSACTION #17
+[*] Transaction #19 [TransactionManagerWorker.run] OPEN_TRANSACTION #19
+[*] Transaction #9 [TransactionManagerWorker.run] OPEN_TRANSACTION #9
+[*] Transaction #1 [TransactionManagerWorker.run] OPEN_TRANSACTION #1
+[*] Transaction #10 [TransactionManagerWorker.run] OPEN_TRANSACTION #10
+[*] Transaction #4 [TransactionManagerWorker.run] OPEN_TRANSACTION #4
+[*] Transaction #2 [TransactionManagerWorker.run] OPEN_TRANSACTION #2
+[*] Transaction #5 [TransactionManagerWorker.run] OPEN_TRANSACTION #5
+[*] Transaction #11 [TransactionManagerWorker.run] OPEN_TRANSACTION #11
+[*] Transaction #15 [TransactionManagerWorker.run] OPEN_TRANSACTION #15
+[*] Transaction #13 [TransactionManagerWorker.run] OPEN_TRANSACTION #13
+[*] Transaction #18 [TransactionManagerWorker.run] OPEN_TRANSACTION #18
+[*] Transaction #0 [TransactionManagerWorker.run] OPEN_TRANSACTION #0
+[*] Transaction #14 [TransactionManagerWorker.run] OPEN_TRANSACTION #14
+[*] Transaction #16 [TransactionManagerWorker.run] READ_REQUEST >>> account #8
+[*] Transaction #14 [TransactionManagerWorker.run] READ_REQUEST >>> account #3
+[*] Transaction #12 [TransactionManagerWorker.run] READ_REQUEST >>> account #6
+[*] Transaction #12 [TransactionManagerWorker.run] READ_REQUEST <<< account #6, balance $10
+[*] Transaction #14 [TransactionManagerWorker.run] READ_REQUEST <<< account #3, balance $10
+[*] Transaction #16 [TransactionManagerWorker.run] READ_REQUEST <<< account #8, balance $10
+[*] Transaction #0 [TransactionManagerWorker.run] READ_REQUEST >>> account #7
+[*] Transaction #0 [TransactionManagerWorker.run] READ_REQUEST <<< account #7, balance $10
+[*] Transaction #18 [TransactionManagerWorker.run] READ_REQUEST >>> account #5
+[*] Transaction #18 [TransactionManagerWorker.run] READ_REQUEST <<< account #5, balance $10
+[*] Transaction #12 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #6, new balance $6
+[*] Transaction #18 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #5, new balance $1
+[*] Transaction #16 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #8, new balance $9
+[*] Transaction #14 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #3, new balance $5
+[*] Transaction #0 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #7, new balance $3
+[*] Transaction #12 [TransactionManagerWorker.run] READ_REQUEST >>> account #2
+[*] Transaction #12 [TransactionManagerWorker.run] READ_REQUEST <<< account #2, balance $10
+[*] Transaction #18 [TransactionManagerWorker.run] READ_REQUEST >>> account #9
+[*] Transaction #18 [TransactionManagerWorker.run] READ_REQUEST <<< account #9, balance $10
+[*] Transaction #14 [TransactionManagerWorker.run] READ_REQUEST >>> account #1
+[*] Transaction #14 [TransactionManagerWorker.run] READ_REQUEST <<< account #1, balance $10
+[*] Transaction #0 [TransactionManagerWorker.run] READ_REQUEST >>> account #3
+[*] Transaction #0 [TransactionManagerWorker.run] READ_REQUEST <<< account #3, balance $10
+[*] Transaction #16 [TransactionManagerWorker.run] READ_REQUEST >>> account #3
+[*] Transaction #16 [TransactionManagerWorker.run] READ_REQUEST <<< account #3, balance $10
+[*] Transaction #12 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #2, new balance $14
+[*] Transaction #18 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #9, new balance $19
+[*] Transaction #0 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #3, new balance $17
+[*] Transaction #16 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #3, new balance $11
+[*] Transaction #14 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #1, new balance $15
+[+] Transaction #12 [TransactionManager.validateTransaction] Transaction #12 successfully validated
+[+] Transaction #12 [TransactionManagerWorker.run] CLOSE_TRANSACTION #12 - COMMITTED
+[+] Transaction #14 [TransactionManager.validateTransaction] Transaction #14 successfully validated
+[+] Transaction #14 [TransactionManagerWorker.run] CLOSE_TRANSACTION #14 - COMMITTED
+[+] Transaction #18 [TransactionManager.validateTransaction] Transaction #18 successfully validated
+[+] Transaction #18 [TransactionManagerWorker.run] CLOSE_TRANSACTION #18 - COMMITTED
+[!] Transaction #0 [TransactionManager.validateTransaction] Transaction #0 failed: r/w conflict on account #3 with Transaction #14
+[+] Transaction #0 [TransactionManagerWorker.run] CLOSE_TRANSACTION #0 - ABORTED
+[!] Transaction #16 [TransactionManager.validateTransaction] Transaction #16 failed: r/w conflict on account #3 with Transaction #14
+[+] Transaction #16 [TransactionManagerWorker.run] CLOSE_TRANSACTION #16 - ABORTED
+[*] Transaction #15 [TransactionManagerWorker.run] READ_REQUEST >>> account #4
+[*] Transaction #15 [TransactionManagerWorker.run] READ_REQUEST <<< account #4, balance $10
+[*] Transaction #15 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #4, new balance $5
+[*] Transaction #15 [TransactionManagerWorker.run] READ_REQUEST >>> account #1
+[*] Transaction #15 [TransactionManagerWorker.run] READ_REQUEST <<< account #1, balance $15
+[*] Transaction #15 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #1, new balance $20
+[!] Transaction #15 [TransactionManager.validateTransaction] Transaction #15 failed: r/w conflict on account #1 with Transaction #14
+[+] Transaction #15 [TransactionManagerWorker.run] CLOSE_TRANSACTION #15 - ABORTED
+[*] Transaction #13 [TransactionManagerWorker.run] READ_REQUEST >>> account #6
+[*] Transaction #13 [TransactionManagerWorker.run] READ_REQUEST <<< account #6, balance $6
+[*] Transaction #13 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #6, new balance $-3
+[*] Transaction #13 [TransactionManagerWorker.run] READ_REQUEST >>> account #8
+[*] Transaction #13 [TransactionManagerWorker.run] READ_REQUEST <<< account #8, balance $10
+[*] Transaction #13 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #8, new balance $19
+[*] Transaction #11 [TransactionManagerWorker.run] READ_REQUEST >>> account #8
+[!] Transaction #13 [TransactionManager.validateTransaction] Transaction #13 failed: r/w conflict on account #6 with Transaction #12
+[+] Transaction #13 [TransactionManagerWorker.run] CLOSE_TRANSACTION #13 - ABORTED
+[*] Transaction #11 [TransactionManagerWorker.run] READ_REQUEST <<< account #8, balance $10
+[*] Transaction #11 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #8, new balance $6
+[*] Transaction #5 [TransactionManagerWorker.run] READ_REQUEST >>> account #0
+[*] Transaction #5 [TransactionManagerWorker.run] READ_REQUEST <<< account #0, balance $10
+[*] Transaction #5 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #0, new balance $7
+[*] Transaction #5 [TransactionManagerWorker.run] READ_REQUEST >>> account #8
+[*] Transaction #5 [TransactionManagerWorker.run] READ_REQUEST <<< account #8, balance $10
+[*] Transaction #5 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #8, new balance $13
+[+] Transaction #5 [TransactionManager.validateTransaction] Transaction #5 successfully validated
+[+] Transaction #5 [TransactionManagerWorker.run] CLOSE_TRANSACTION #5 - COMMITTED
+[*] Transaction #11 [TransactionManagerWorker.run] READ_REQUEST >>> account #5
+[*] Transaction #2 [TransactionManagerWorker.run] READ_REQUEST >>> account #9
+[*] Transaction #2 [TransactionManagerWorker.run] READ_REQUEST <<< account #9, balance $19
+[*] Transaction #2 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #9, new balance $15
+[*] Transaction #2 [TransactionManagerWorker.run] READ_REQUEST >>> account #1
+[*] Transaction #2 [TransactionManagerWorker.run] READ_REQUEST <<< account #1, balance $15
+[*] Transaction #2 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #1, new balance $19
+[!] Transaction #2 [TransactionManager.validateTransaction] Transaction #2 failed: r/w conflict on account #1 with Transaction #14
+[+] Transaction #2 [TransactionManagerWorker.run] CLOSE_TRANSACTION #2 - ABORTED
+[*] Transaction #11 [TransactionManagerWorker.run] READ_REQUEST <<< account #5, balance $1
+[*] Transaction #11 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #5, new balance $5
+[!] Transaction #11 [TransactionManager.validateTransaction] Transaction #11 failed: r/w conflict on account #5 with Transaction #18
+[+] Transaction #11 [TransactionManagerWorker.run] CLOSE_TRANSACTION #11 - ABORTED
+[*] Transaction #10 [TransactionManagerWorker.run] READ_REQUEST >>> account #6
+[*] Transaction #10 [TransactionManagerWorker.run] READ_REQUEST <<< account #6, balance $6
+[*] Transaction #10 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #6, new balance $-2
+[*] Transaction #4 [TransactionManagerWorker.run] READ_REQUEST >>> account #7
+[*] Transaction #10 [TransactionManagerWorker.run] READ_REQUEST >>> account #4
+[*] Transaction #10 [TransactionManagerWorker.run] READ_REQUEST <<< account #4, balance $10
+[*] Transaction #4 [TransactionManagerWorker.run] READ_REQUEST <<< account #7, balance $10
+[*] Transaction #10 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #4, new balance $18
+[!] Transaction #10 [TransactionManager.validateTransaction] Transaction #10 failed: r/w conflict on account #6 with Transaction #12
+[+] Transaction #10 [TransactionManagerWorker.run] CLOSE_TRANSACTION #10 - ABORTED
+[*] Transaction #4 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #7, new balance $6
+[*] Transaction #1 [TransactionManagerWorker.run] READ_REQUEST >>> account #9
+[*] Transaction #1 [TransactionManagerWorker.run] READ_REQUEST <<< account #9, balance $19
+[*] Transaction #1 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #9, new balance $11
+[*] Transaction #1 [TransactionManagerWorker.run] READ_REQUEST >>> account #4
+[*] Transaction #1 [TransactionManagerWorker.run] READ_REQUEST <<< account #4, balance $10
+[*] Transaction #4 [TransactionManagerWorker.run] READ_REQUEST >>> account #1
+[*] Transaction #4 [TransactionManagerWorker.run] READ_REQUEST <<< account #1, balance $15
+[*] Transaction #1 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #4, new balance $18
+[!] Transaction #1 [TransactionManager.validateTransaction] Transaction #1 failed: r/w conflict on account #9 with Transaction #18
+[+] Transaction #1 [TransactionManagerWorker.run] CLOSE_TRANSACTION #1 - ABORTED
+[*] Transaction #4 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #1, new balance $19
+[!] Transaction #4 [TransactionManager.validateTransaction] Transaction #4 failed: r/w conflict on account #1 with Transaction #14
+[*] Transaction #9 [TransactionManagerWorker.run] READ_REQUEST >>> account #4
+[+] Transaction #4 [TransactionManagerWorker.run] CLOSE_TRANSACTION #4 - ABORTED
+[*] Transaction #9 [TransactionManagerWorker.run] READ_REQUEST <<< account #4, balance $10
+[*] Transaction #9 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #4, new balance $5
+[*] Transaction #9 [TransactionManagerWorker.run] READ_REQUEST >>> account #5
+[*] Transaction #9 [TransactionManagerWorker.run] READ_REQUEST <<< account #5, balance $1
+[*] Transaction #9 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #5, new balance $6
+[*] Transaction #19 [TransactionManagerWorker.run] READ_REQUEST >>> account #7
+[*] Transaction #19 [TransactionManagerWorker.run] READ_REQUEST <<< account #7, balance $10
+[!] Transaction #9 [TransactionManager.validateTransaction] Transaction #9 failed: r/w conflict on account #5 with Transaction #18
+[+] Transaction #9 [TransactionManagerWorker.run] CLOSE_TRANSACTION #9 - ABORTED
+[*] Transaction #19 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #7, new balance $4
+[*] Transaction #19 [TransactionManagerWorker.run] READ_REQUEST >>> account #9
+[*] Transaction #19 [TransactionManagerWorker.run] READ_REQUEST <<< account #9, balance $19
+[*] Transaction #19 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #9, new balance $25
+[!] Transaction #19 [TransactionManager.validateTransaction] Transaction #19 failed: r/w conflict on account #9 with Transaction #18
+[+] Transaction #19 [TransactionManagerWorker.run] CLOSE_TRANSACTION #19 - ABORTED
+[*] Transaction #17 [TransactionManagerWorker.run] READ_REQUEST >>> account #8
+[*] Transaction #17 [TransactionManagerWorker.run] READ_REQUEST <<< account #8, balance $13
+[*] Transaction #17 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #8, new balance $13
+[*] Transaction #8 [TransactionManagerWorker.run] READ_REQUEST >>> account #0
+[*] Transaction #8 [TransactionManagerWorker.run] READ_REQUEST <<< account #0, balance $7
+[*] Transaction #17 [TransactionManagerWorker.run] READ_REQUEST >>> account #7
+[*] Transaction #17 [TransactionManagerWorker.run] READ_REQUEST <<< account #7, balance $10
+[*] Transaction #7 [TransactionManagerWorker.run] READ_REQUEST >>> account #5
+[*] Transaction #7 [TransactionManagerWorker.run] READ_REQUEST <<< account #5, balance $1
+[*] Transaction #8 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #0, new balance $1
+[*] Transaction #17 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #7, new balance $10
+[*] Transaction #7 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #5, new balance $-5
+[!] Transaction #17 [TransactionManager.validateTransaction] Transaction #17 failed: r/w conflict on account #8 with Transaction #5
+[*] Transaction #8 [TransactionManagerWorker.run] READ_REQUEST >>> account #6
+[*] Transaction #8 [TransactionManagerWorker.run] READ_REQUEST <<< account #6, balance $6
+[+] Transaction #17 [TransactionManagerWorker.run] CLOSE_TRANSACTION #17 - ABORTED
+[*] Transaction #7 [TransactionManagerWorker.run] READ_REQUEST >>> account #7
+[*] Transaction #7 [TransactionManagerWorker.run] READ_REQUEST <<< account #7, balance $10
+[*] Transaction #8 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #6, new balance $12
+[*] Transaction #7 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #7, new balance $16
+[!] Transaction #8 [TransactionManager.validateTransaction] Transaction #8 failed: r/w conflict on account #6 with Transaction #12
+[+] Transaction #8 [TransactionManagerWorker.run] CLOSE_TRANSACTION #8 - ABORTED
+[!] Transaction #7 [TransactionManager.validateTransaction] Transaction #7 failed: r/w conflict on account #5 with Transaction #18
+[+] Transaction #7 [TransactionManagerWorker.run] CLOSE_TRANSACTION #7 - ABORTED
+[*] Transaction #3 [TransactionManagerWorker.run] READ_REQUEST >>> account #4
+[*] Transaction #3 [TransactionManagerWorker.run] READ_REQUEST <<< account #4, balance $10
+[*] Transaction #3 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #4, new balance $3
+[*] Transaction #3 [TransactionManagerWorker.run] READ_REQUEST >>> account #5
+[*] Transaction #3 [TransactionManagerWorker.run] READ_REQUEST <<< account #5, balance $1
+[*] Transaction #3 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #5, new balance $8
+[!] Transaction #3 [TransactionManager.validateTransaction] Transaction #3 failed: r/w conflict on account #5 with Transaction #18
+[+] Transaction #3 [TransactionManagerWorker.run] CLOSE_TRANSACTION #3 - ABORTED
+[*] Transaction #6 [TransactionManagerWorker.run] READ_REQUEST >>> account #0
+[*] Transaction #6 [TransactionManagerWorker.run] READ_REQUEST <<< account #0, balance $7
+[*] Transaction #6 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #0, new balance $-1
+[*] Transaction #6 [TransactionManagerWorker.run] READ_REQUEST >>> account #5
+[*] Transaction #6 [TransactionManagerWorker.run] READ_REQUEST <<< account #5, balance $1
+[*] Transaction #6 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #5, new balance $9
+[!] Transaction #6 [TransactionManager.validateTransaction] Transaction #6 failed: r/w conflict on account #5 with Transaction #18
+[+] Transaction #6 [TransactionManagerWorker.run] CLOSE_TRANSACTION #6 - ABORTED
+[*] Transaction #20 [TransactionManagerWorker.run] OPEN_TRANSACTION #20
+[*] Transaction #21 [TransactionManagerWorker.run] OPEN_TRANSACTION #21
+[*] Transaction #20 [TransactionManagerWorker.run] READ_REQUEST >>> account #8
+[*] Transaction #20 [TransactionManagerWorker.run] READ_REQUEST <<< account #8, balance $13
+[*] Transaction #20 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #8, new balance $12
+[*] Transaction #22 [TransactionManagerWorker.run] OPEN_TRANSACTION #22
+[*] Transaction #20 [TransactionManagerWorker.run] READ_REQUEST >>> account #3
+[*] Transaction #20 [TransactionManagerWorker.run] READ_REQUEST <<< account #3, balance $5
+[*] Transaction #20 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #3, new balance $6
+[+] Transaction #20 [TransactionManager.validateTransaction] Transaction #20 successfully validated
+[+] Transaction #20 [TransactionManagerWorker.run] CLOSE_TRANSACTION #20 - COMMITTED
+[*] Transaction #23 [TransactionManagerWorker.run] OPEN_TRANSACTION #23
+[*] Transaction #23 [TransactionManagerWorker.run] READ_REQUEST >>> account #6
+[*] Transaction #23 [TransactionManagerWorker.run] READ_REQUEST <<< account #6, balance $6
+[*] Transaction #22 [TransactionManagerWorker.run] READ_REQUEST >>> account #4
+[*] Transaction #22 [TransactionManagerWorker.run] READ_REQUEST <<< account #4, balance $10
+[*] Transaction #23 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #6, new balance $-3
+[*] Transaction #22 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #4, new balance $5
+[*] Transaction #23 [TransactionManagerWorker.run] READ_REQUEST >>> account #8
+[*] Transaction #23 [TransactionManagerWorker.run] READ_REQUEST <<< account #8, balance $12
+[*] Transaction #22 [TransactionManagerWorker.run] READ_REQUEST >>> account #1
+[*] Transaction #22 [TransactionManagerWorker.run] READ_REQUEST <<< account #1, balance $15
+[*] Transaction #23 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #8, new balance $21
+[*] Transaction #22 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #1, new balance $20
+[+] Transaction #23 [TransactionManager.validateTransaction] Transaction #23 successfully validated
+[+] Transaction #23 [TransactionManagerWorker.run] CLOSE_TRANSACTION #23 - COMMITTED
+[+] Transaction #22 [TransactionManager.validateTransaction] Transaction #22 successfully validated
+[+] Transaction #22 [TransactionManagerWorker.run] CLOSE_TRANSACTION #22 - COMMITTED
+[*] Transaction #21 [TransactionManagerWorker.run] READ_REQUEST >>> account #7
+[*] Transaction #21 [TransactionManagerWorker.run] READ_REQUEST <<< account #7, balance $10
+[*] Transaction #21 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #7, new balance $3
+[*] Transaction #21 [TransactionManagerWorker.run] READ_REQUEST >>> account #3
+[*] Transaction #21 [TransactionManagerWorker.run] READ_REQUEST <<< account #3, balance $6
+[*] Transaction #24 [TransactionManagerWorker.run] OPEN_TRANSACTION #24
+[*] Transaction #21 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #3, new balance $13
+[!] Transaction #21 [TransactionManager.validateTransaction] Transaction #21 failed: r/w conflict on account #3 with Transaction #20
+[+] Transaction #21 [TransactionManagerWorker.run] CLOSE_TRANSACTION #21 - ABORTED
+[*] Transaction #24 [TransactionManagerWorker.run] READ_REQUEST >>> account #9
+[*] Transaction #24 [TransactionManagerWorker.run] READ_REQUEST <<< account #9, balance $19
+[*] Transaction #24 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #9, new balance $15
+[*] Transaction #24 [TransactionManagerWorker.run] READ_REQUEST >>> account #1
+[*] Transaction #24 [TransactionManagerWorker.run] READ_REQUEST <<< account #1, balance $20
+[*] Transaction #24 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #1, new balance $24
+[+] Transaction #24 [TransactionManager.validateTransaction] Transaction #24 successfully validated
+[+] Transaction #24 [TransactionManagerWorker.run] CLOSE_TRANSACTION #24 - COMMITTED
+[*] Transaction #26 [TransactionManagerWorker.run] OPEN_TRANSACTION #26
+[*] Transaction #27 [TransactionManagerWorker.run] OPEN_TRANSACTION #27
+[*] Transaction #26 [TransactionManagerWorker.run] READ_REQUEST >>> account #6
+[*] Transaction #26 [TransactionManagerWorker.run] READ_REQUEST <<< account #6, balance $-3
+[*] Transaction #26 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #6, new balance $-11
+[*] Transaction #26 [TransactionManagerWorker.run] READ_REQUEST >>> account #4
+[*] Transaction #26 [TransactionManagerWorker.run] READ_REQUEST <<< account #4, balance $5
+[*] Transaction #26 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #4, new balance $13
+[+] Transaction #26 [TransactionManager.validateTransaction] Transaction #26 successfully validated
+[*] Transaction #27 [TransactionManagerWorker.run] READ_REQUEST >>> account #9
+[+] Transaction #26 [TransactionManagerWorker.run] CLOSE_TRANSACTION #26 - COMMITTED
+[*] Transaction #27 [TransactionManagerWorker.run] READ_REQUEST <<< account #9, balance $15
+[*] Transaction #27 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #9, new balance $7
+[*] Transaction #27 [TransactionManagerWorker.run] READ_REQUEST >>> account #4
+[*] Transaction #27 [TransactionManagerWorker.run] READ_REQUEST <<< account #4, balance $13
+[*] Transaction #27 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #4, new balance $21
+[!] Transaction #27 [TransactionManager.validateTransaction] Transaction #27 failed: r/w conflict on account #4 with Transaction #26
+[+] Transaction #27 [TransactionManagerWorker.run] CLOSE_TRANSACTION #27 - ABORTED
+[*] Transaction #29 [TransactionManagerWorker.run] OPEN_TRANSACTION #29
+[*] Transaction #29 [TransactionManagerWorker.run] READ_REQUEST >>> account #4
+[*] Transaction #29 [TransactionManagerWorker.run] READ_REQUEST <<< account #4, balance $13
+[*] Transaction #29 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #4, new balance $8
+[*] Transaction #28 [TransactionManagerWorker.run] OPEN_TRANSACTION #28
+[*] Transaction #29 [TransactionManagerWorker.run] READ_REQUEST >>> account #5
+[*] Transaction #29 [TransactionManagerWorker.run] READ_REQUEST <<< account #5, balance $1
+[*] Transaction #29 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #5, new balance $6
+[+] Transaction #29 [TransactionManager.validateTransaction] Transaction #29 successfully validated
+[+] Transaction #29 [TransactionManagerWorker.run] CLOSE_TRANSACTION #29 - COMMITTED
+[*] Transaction #28 [TransactionManagerWorker.run] READ_REQUEST >>> account #7
+[*] Transaction #28 [TransactionManagerWorker.run] READ_REQUEST <<< account #7, balance $10
+[*] Transaction #28 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #7, new balance $6
+[*] Transaction #28 [TransactionManagerWorker.run] READ_REQUEST >>> account #1
+[*] Transaction #28 [TransactionManagerWorker.run] READ_REQUEST <<< account #1, balance $24
+[*] Transaction #28 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #1, new balance $28
+[+] Transaction #28 [TransactionManager.validateTransaction] Transaction #28 successfully validated
+[*] Transaction #30 [TransactionManagerWorker.run] OPEN_TRANSACTION #30
+[+] Transaction #28 [TransactionManagerWorker.run] CLOSE_TRANSACTION #28 - COMMITTED
+[*] Transaction #30 [TransactionManagerWorker.run] READ_REQUEST >>> account #7
+[*] Transaction #30 [TransactionManagerWorker.run] READ_REQUEST <<< account #7, balance $6
+[*] Transaction #30 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #7, new balance $0
+[*] Transaction #30 [TransactionManagerWorker.run] READ_REQUEST >>> account #9
+[*] Transaction #30 [TransactionManagerWorker.run] READ_REQUEST <<< account #9, balance $15
+[*] Transaction #30 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #9, new balance $21
+[!] Transaction #30 [TransactionManager.validateTransaction] Transaction #30 failed: r/w conflict on account #7 with Transaction #28
+[+] Transaction #30 [TransactionManagerWorker.run] CLOSE_TRANSACTION #30 - ABORTED
+[*] Transaction #33 [TransactionManagerWorker.run] OPEN_TRANSACTION #33
+[*] Transaction #33 [TransactionManagerWorker.run] READ_REQUEST >>> account #5
+[*] Transaction #33 [TransactionManagerWorker.run] READ_REQUEST <<< account #5, balance $6
+[*] Transaction #33 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #5, new balance $0
+[*] Transaction #33 [TransactionManagerWorker.run] READ_REQUEST >>> account #7
+[*] Transaction #33 [TransactionManagerWorker.run] READ_REQUEST <<< account #7, balance $6
+[*] Transaction #33 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #7, new balance $12
+[+] Transaction #33 [TransactionManager.validateTransaction] Transaction #33 successfully validated
+[+] Transaction #33 [TransactionManagerWorker.run] CLOSE_TRANSACTION #33 - COMMITTED
+[*] Transaction #32 [TransactionManagerWorker.run] OPEN_TRANSACTION #32
+[*] Transaction #35 [TransactionManagerWorker.run] OPEN_TRANSACTION #35
+[*] Transaction #35 [TransactionManagerWorker.run] READ_REQUEST >>> account #0
+[*] Transaction #35 [TransactionManagerWorker.run] READ_REQUEST <<< account #0, balance $7
+[*] Transaction #32 [TransactionManagerWorker.run] READ_REQUEST >>> account #0
+[*] Transaction #32 [TransactionManagerWorker.run] READ_REQUEST <<< account #0, balance $7
+[*] Transaction #35 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #0, new balance $-1
+[*] Transaction #32 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #0, new balance $1
+[*] Transaction #35 [TransactionManagerWorker.run] READ_REQUEST >>> account #5
+[*] Transaction #35 [TransactionManagerWorker.run] READ_REQUEST <<< account #5, balance $0
+[*] Transaction #32 [TransactionManagerWorker.run] READ_REQUEST >>> account #6
+[*] Transaction #32 [TransactionManagerWorker.run] READ_REQUEST <<< account #6, balance $-11
+[*] Transaction #35 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #5, new balance $8
+[+] Transaction #35 [TransactionManager.validateTransaction] Transaction #35 successfully validated
+[*] Transaction #32 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #6, new balance $-5
+[+] Transaction #35 [TransactionManagerWorker.run] CLOSE_TRANSACTION #35 - COMMITTED
+[!] Transaction #32 [TransactionManager.validateTransaction] Transaction #32 failed: r/w conflict on account #0 with Transaction #35
+[+] Transaction #32 [TransactionManagerWorker.run] CLOSE_TRANSACTION #32 - ABORTED
+[*] Transaction #25 [TransactionManagerWorker.run] OPEN_TRANSACTION #25
+[*] Transaction #36 [TransactionManagerWorker.run] OPEN_TRANSACTION #36
+[*] Transaction #25 [TransactionManagerWorker.run] READ_REQUEST >>> account #8
+[*] Transaction #25 [TransactionManagerWorker.run] READ_REQUEST <<< account #8, balance $21
+[*] Transaction #25 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #8, new balance $17
+[*] Transaction #25 [TransactionManagerWorker.run] READ_REQUEST >>> account #5
+[*] Transaction #25 [TransactionManagerWorker.run] READ_REQUEST <<< account #5, balance $8
+[*] Transaction #25 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #5, new balance $12
+[+] Transaction #25 [TransactionManager.validateTransaction] Transaction #25 successfully validated
+[*] Transaction #36 [TransactionManagerWorker.run] READ_REQUEST >>> account #7
+[+] Transaction #25 [TransactionManagerWorker.run] CLOSE_TRANSACTION #25 - COMMITTED
+[*] Transaction #36 [TransactionManagerWorker.run] READ_REQUEST <<< account #7, balance $12
+[*] Transaction #36 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #7, new balance $5
+[*] Transaction #36 [TransactionManagerWorker.run] READ_REQUEST >>> account #3
+[*] Transaction #36 [TransactionManagerWorker.run] READ_REQUEST <<< account #3, balance $6
+[*] Transaction #36 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #3, new balance $13
+[+] Transaction #36 [TransactionManager.validateTransaction] Transaction #36 successfully validated
+[+] Transaction #36 [TransactionManagerWorker.run] CLOSE_TRANSACTION #36 - COMMITTED
+[*] Transaction #34 [TransactionManagerWorker.run] OPEN_TRANSACTION #34
+[*] Transaction #31 [TransactionManagerWorker.run] OPEN_TRANSACTION #31
+[*] Transaction #31 [TransactionManagerWorker.run] READ_REQUEST >>> account #8
+[*] Transaction #31 [TransactionManagerWorker.run] READ_REQUEST <<< account #8, balance $17
+[*] Transaction #34 [TransactionManagerWorker.run] READ_REQUEST >>> account #4
+[*] Transaction #34 [TransactionManagerWorker.run] READ_REQUEST <<< account #4, balance $8
+[*] Transaction #31 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #8, new balance $17
+[*] Transaction #34 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #4, new balance $1
+[*] Transaction #31 [TransactionManagerWorker.run] READ_REQUEST >>> account #7
+[*] Transaction #31 [TransactionManagerWorker.run] READ_REQUEST <<< account #7, balance $5
+[*] Transaction #34 [TransactionManagerWorker.run] READ_REQUEST >>> account #5
+[*] Transaction #34 [TransactionManagerWorker.run] READ_REQUEST <<< account #5, balance $12
+[*] Transaction #31 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #7, new balance $5
+[*] Transaction #34 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #5, new balance $19
+[+] Transaction #34 [TransactionManager.validateTransaction] Transaction #34 successfully validated
+[+] Transaction #34 [TransactionManagerWorker.run] CLOSE_TRANSACTION #34 - COMMITTED
+[+] Transaction #31 [TransactionManager.validateTransaction] Transaction #31 successfully validated
+[+] Transaction #31 [TransactionManagerWorker.run] CLOSE_TRANSACTION #31 - COMMITTED
+[*] Transaction #38 [TransactionManagerWorker.run] OPEN_TRANSACTION #38
+[*] Transaction #37 [TransactionManagerWorker.run] OPEN_TRANSACTION #37
+[*] Transaction #38 [TransactionManagerWorker.run] READ_REQUEST >>> account #7
+[*] Transaction #37 [TransactionManagerWorker.run] READ_REQUEST >>> account #9
+[*] Transaction #37 [TransactionManagerWorker.run] READ_REQUEST <<< account #9, balance $15
+[*] Transaction #38 [TransactionManagerWorker.run] READ_REQUEST <<< account #7, balance $5
+[*] Transaction #38 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #7, new balance $-1
+[*] Transaction #37 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #9, new balance $7
+[*] Transaction #38 [TransactionManagerWorker.run] READ_REQUEST >>> account #9
+[*] Transaction #38 [TransactionManagerWorker.run] READ_REQUEST <<< account #9, balance $15
+[*] Transaction #37 [TransactionManagerWorker.run] READ_REQUEST >>> account #4
+[*] Transaction #37 [TransactionManagerWorker.run] READ_REQUEST <<< account #4, balance $1
+[*] Transaction #38 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #9, new balance $21
+[+] Transaction #38 [TransactionManager.validateTransaction] Transaction #38 successfully validated
+[*] Transaction #37 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #4, new balance $9
+[+] Transaction #38 [TransactionManagerWorker.run] CLOSE_TRANSACTION #38 - COMMITTED
+[!] Transaction #37 [TransactionManager.validateTransaction] Transaction #37 failed: r/w conflict on account #9 with Transaction #38
+[+] Transaction #37 [TransactionManagerWorker.run] CLOSE_TRANSACTION #37 - ABORTED
+[*] Transaction #39 [TransactionManagerWorker.run] OPEN_TRANSACTION #39
+[*] Transaction #39 [TransactionManagerWorker.run] READ_REQUEST >>> account #0
+[*] Transaction #39 [TransactionManagerWorker.run] READ_REQUEST <<< account #0, balance $-1
+[*] Transaction #39 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #0, new balance $-7
+[*] Transaction #39 [TransactionManagerWorker.run] READ_REQUEST >>> account #6
+[*] Transaction #39 [TransactionManagerWorker.run] READ_REQUEST <<< account #6, balance $-11
+[*] Transaction #40 [TransactionManagerWorker.run] OPEN_TRANSACTION #40
+[*] Transaction #39 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #6, new balance $-5
+[+] Transaction #39 [TransactionManager.validateTransaction] Transaction #39 successfully validated
+[+] Transaction #39 [TransactionManagerWorker.run] CLOSE_TRANSACTION #39 - COMMITTED
+[*] Transaction #40 [TransactionManagerWorker.run] READ_REQUEST >>> account #9
+[*] Transaction #40 [TransactionManagerWorker.run] READ_REQUEST <<< account #9, balance $21
+[*] Transaction #40 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #9, new balance $13
+[*] Transaction #40 [TransactionManagerWorker.run] READ_REQUEST >>> account #4
+[*] Transaction #40 [TransactionManagerWorker.run] READ_REQUEST <<< account #4, balance $1
+[*] Transaction #40 [TransactionManagerWorker.run] WRITE_REQUEST >>> account #4, new balance $9
+[+] Transaction #40 [TransactionManager.validateTransaction] Transaction #40 successfully validated
+[+] Transaction #40 [TransactionManagerWorker.run] CLOSE_TRANSACTION #40 - COMMITTED
+[$$$] Socket closed! Shutting down.
+Final branch total: 100

@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import server.account.Account;
-import server.account.AccountManager;
 import static utils.config.PropertiesHandler.getPropertyInfo;
 
 /**
@@ -36,28 +34,28 @@ public class TransactionClient {
         @Override
         public void run() {
             
+            // choose two random account IDs for a transaction
+            // NOTE: need to set the upper bound to the total amount
+            // of accounts
+            firstAccountID = getRandomNumber(0, 10);
+            secondAccountID = getRandomNumber(0, 10);
+            // ensure the same account isn't selected
+            while(secondAccountID == firstAccountID)
+            {
+                secondAccountID = getRandomNumber(0, 10);
+            }
+
+            // create a random amount to transfer between the accounts
+            // NOTE: maximum size of transaction amount is arbitraily set
+            // to 10
+            transferAmount = getRandomNumber(0, 10);
+            
             while(transactionResult == TRANSACTION_ABORTED)
             {
                 try
                 {
                     // create a transaction server proxy
                     transactionServerProxy = new TransactionServerProxy();
-
-                    // choose two random account IDs for a transaction
-                    // NOTE: need to set the upper bound to the total amount
-                    // of accounts
-                    firstAccountID = getRandomNumber(0, 10);
-                    secondAccountID = getRandomNumber(0, 10);
-                    // ensure the same account isn't selected
-                    while(secondAccountID == firstAccountID)
-                    {
-                        secondAccountID = getRandomNumber(0, 10);
-                    }
-
-                    // create a random amount to transfer between the accounts
-                    // NOTE: maximum size of transaction amount is arbitraily set
-                    // to 10
-                    transferAmount = getRandomNumber(0, 10);
 
                     // open the transaction and wait for a transaction ID
                     transactionID = transactionServerProxy.openTransaction();

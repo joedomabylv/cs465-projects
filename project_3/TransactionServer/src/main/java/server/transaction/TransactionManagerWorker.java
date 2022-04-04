@@ -31,6 +31,7 @@ public class TransactionManagerWorker extends Thread {
     int amount;
     int transactionResult;
     int writeSetResult;
+    String logString;
     
     public TransactionManagerWorker(Socket client, int transactionID) throws SocketException {
         this.client = client;
@@ -85,7 +86,9 @@ public class TransactionManagerWorker extends Thread {
                             // store it in the active transactions list
                             transactionManager.addActiveTransaction(transaction);
                         }
-                        System.out.println("[*] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] OPEN_TRANSACTION #" + transaction.getTransactionID());
+                        logString = "[*] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] OPEN_TRANSACTION #" + transaction.getTransactionID();
+                        System.out.println(logString);
+                        transaction.log(logString);
 
                         // send the transaction ID back to the proxy
                         toClient.writeObject(transaction.getTransactionID());
@@ -106,7 +109,9 @@ public class TransactionManagerWorker extends Thread {
                                 // validation successful, commence update phase
                                 transactionManager.updateTransaction(transaction);
                                 
-                                System.out.println("[+] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] CLOSE_TRANSACTION #" + transaction.getTransactionID() + " - COMMITTED");
+                                logString = "[+] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] CLOSE_TRANSACTION #" + transaction.getTransactionID() + " - COMMITTED";
+                                System.out.println(logString);
+                                transaction.log(logString);
                                 
                                 // return committed transaction result to client
                                 toClient.writeObject(TRANSACTION_COMMITTED);
@@ -115,7 +120,9 @@ public class TransactionManagerWorker extends Thread {
                             {
                                 // transaction failed validation, abort it
                                 transactionManager.addAbortedTransaction(transaction);
-                                System.out.println("[+] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] CLOSE_TRANSACTION #" + transaction.getTransactionID() + " - ABORTED");
+                                logString = "[+] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] CLOSE_TRANSACTION #" + transaction.getTransactionID() + " - ABORTED";
+                                System.out.println(logString);
+                                transaction.log(logString);
 
                                 toClient.writeObject(TRANSACTION_ABORTED);
                             }
@@ -129,24 +136,22 @@ public class TransactionManagerWorker extends Thread {
                         
                         // end worker loop
                         transactionOpen = false;
-                        
-                        // check if there are any active transactions left
-//                        if(transactionManager.getActiveTransactions().isEmpty())
-//                        {
-//                            TransactionServer.serverRunning = false;
-//                        }
                        
                     }
                     case READ_REQUEST ->
                     {
                         // get the transaction ID from the message
                         accountID = (int) messageReceived.getContent();
-                        System.out.println("[*] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] READ_REQUEST >>> account #" + accountID);
+                        logString = "[*] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] READ_REQUEST >>> account #" + accountID;
+                        System.out.println(logString);
+                        transaction.log(logString);
 
                         
                         // get the account balance from the given account ID
                         accountBalance = transaction.read(accountID);
-                        System.out.println("[*] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] READ_REQUEST <<< account #" + accountID + ", balance $" + accountBalance);
+                        logString = "[*] Transaction #" + transaction.getTransactionID() + " [TransactionManagerWorker.run] READ_REQUEST <<< account #" + accountID + ", balance $" + accountBalance;
+                        System.out.println(logString);
+                        transaction.log(logString);
 
                         // send the result back to the proxy
                         toClient.writeObject(accountBalance);
@@ -161,7 +166,9 @@ public class TransactionManagerWorker extends Thread {
                         
                         // write the given balance to the account
                         writeSetResult = transaction.write(accountID, amount);
-                        System.out.println("[*] Transaction #" + this.transaction.getTransactionID() + " [TransactionManagerWorker.run] WRITE_REQUEST >>> account #" + accountID + ", new balance $" + amount);
+                        logString = "[*] Transaction #" + this.transaction.getTransactionID() + " [TransactionManagerWorker.run] WRITE_REQUEST >>> account #" + accountID + ", new balance $" + amount;
+                        System.out.println(logString);
+                        transaction.log(logString);
                         
                         // send the result back to the proxy
                         toClient.writeObject(writeSetResult);

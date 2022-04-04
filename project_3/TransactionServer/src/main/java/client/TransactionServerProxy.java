@@ -168,7 +168,7 @@ public class TransactionServerProxy {
     {
         
         int writeSetResult = WRITESET_FAIL;
-        
+
         try
         {  
             int[] messageContent = {accountID, amount};

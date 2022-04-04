@@ -107,7 +107,7 @@ public class Transaction {
      */
     public void log(String logString)
     {
-        this.log += logString;
+        TransactionServer.updateLogList(logString);
     }
     
     /**
@@ -143,44 +143,6 @@ public class Transaction {
     }
     
     /**
-     * Open a transaction between two clients and commence the transaction
-     * @param transactionID
-     * @return 
-     */
-    private Boolean openTransaction(int clientA, int clientB, int amount)
-    {
-        
-        // open a connection between two clients, A and B
-        
-        // read balance A
-        // write to balance A balance A's total and subtract the amount
-        
-        // read balance B
-        // write to balance B the current amount + the new amount
-        
-        // close the connection
-        
-        // return the success of the transaction
-        return null;
-    }
-    
-    /**
-     * Close a transaction. Commit the transaction if it was successful,
-     * abort the transaction if failure.
-     * @return Boolean success/failure
-     */
-    private Boolean closeTransaction()
-    {
-        // commit the transaction if success
-        
-        // abort if a transaction is already going on between either account
-        
-        // write result to log?
-        
-        return null;
-    }
-    
-    /**
      * Get all overlapping transactions based on a given transaction
      * @param transaction
      * @param committedTransactions
@@ -193,7 +155,7 @@ public class Transaction {
         if(!committedTransactions.isEmpty())
         {
             // generate a list of overlapping transactions
-            for(int index = transaction.getLastCommittedTransactionNumber() + 1; index < transaction.getTransactionNumber() - 1; index++)
+            for(int index = transaction.getLastCommittedTransactionNumber() + 1; index < transaction.getTransactionNumber(); index++)
             {
                 overlappingTransactions.add(committedTransactions.get(index));
             }

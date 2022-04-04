@@ -1,8 +1,10 @@
 package server.transaction;
 
+import comm.Log;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,6 +25,9 @@ public class TransactionServer {
     public static AccountManager accountManager = null;
     private ServerSocket server = null;
     public static Boolean serverRunning = true;
+    private Boolean clientConnected = false;
+    public static Log finalLog;
+    public String logString;
     
     /**
      * Construct a transaction server listening on the given port
@@ -37,6 +42,9 @@ public class TransactionServer {
         this.numberAccounts = numberAccounts;
         this.initialBalance = initialBalance;
         
+        // create a new log for final execution
+        finalLog = new Log();
+        
         // create all managers
         transactionManager = new TransactionManager();
         accountManager = new AccountManager(numberAccounts, initialBalance);
@@ -44,7 +52,9 @@ public class TransactionServer {
         // open the server socket
         try {
             server = new ServerSocket(serverPort);
-            System.out.println("[+] ServerSocket created");
+            logString = "[+] ServerSocket created";
+            System.out.println(logString);
+            updateLogList(logString);
         } catch (IOException ex) {
             Logger.getLogger(TransactionServer.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -53,15 +63,54 @@ public class TransactionServer {
     public void runServerLoop() throws IOException {
         while(serverRunning)
         {
-            // listen for a transaction from the client
-            Socket client = server.accept();
-            
-            // inform the transaction manager that a transaction is about
-            // to occur
-            transactionManager.runTransaction(client);
+            try
+            {
+                // wait for 3 seconds
+                server.setSoTimeout(3000);
+
+                // listen for a transaction from the client
+                Socket client = server.accept();
+
+                // inform the transaction manager that a transaction is about
+                // to occur
+                transactionManager.runTransaction(client);
+                
+                clientConnected = true;
+            } catch (SocketTimeoutException ex)
+            {
+                // check if the client has connected before shutting down
+                if(clientConnected)
+                {
+                    logString = "[$$$] Socket closed! Shutting down.";
+                    System.out.println(logString);
+                    updateLogList(logString);
+                    serverRunning = false;
+                }
+            }
         }
         
-        System.out.println("Final branch total: " + accountManager.getBranchTotal());
+        logString = "Final branch total: " + accountManager.getBranchTotal();
+        System.out.println(logString);
+        updateLogList(logString);
+        logToFile();
+    }
+    
+    /**
+     * Update the final log string for the end of execution
+     * @param logString 
+     */
+    public static void updateLogList(String logString)
+    {
+        finalLog.addString(logString);
+    }
+    
+    /**
+     * After program execution, create final log file
+     * @throws java.io.IOException
+     */
+    public void logToFile() throws IOException
+    {
+        finalLog.logToFile();
     }
     
     public static void main(String[] args) throws IOException {

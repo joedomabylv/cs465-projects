@@ -45,6 +45,7 @@ public class Account {
     public void write(int amount)
     {
         this.balance = amount;
+        
     }
     
 }

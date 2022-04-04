@@ -1,12 +1,15 @@
 package server.account;
 
 import java.util.ArrayList;
+import server.transaction.TransactionServer;
 
 /**
  * Account Manager
  * @author Joe Domabyl V, Nick Nannen, Daniel Rydberg
  */
 public class AccountManager {
+    
+    String logString;
     
     public static ArrayList<Account> accounts;
     
@@ -25,7 +28,9 @@ public class AccountManager {
         {
             AccountManager.accounts.add(createAccount(index, initialBalance));
         }
-        System.out.println("[+] AccountManager created");
+        logString = "[+] AccountManager created";
+        TransactionServer.updateLogList(logString);
+        System.out.println(logString);
     }
     
     /**
@@ -45,7 +50,6 @@ public class AccountManager {
      */
     public static int getTotalAccountNumber()
     {
-        System.out.println(AccountManager.accounts);
         return AccountManager.accounts.size();
     }
     
